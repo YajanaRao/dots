@@ -1,4 +1,4 @@
-# Dotfiles
+# Dotfiles ☕️
 
 My personal dotfiles managed as a bare Git repository.
 
