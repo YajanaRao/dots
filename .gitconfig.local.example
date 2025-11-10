@@ -1,0 +1,12 @@
+# Machine-specific Git configuration
+# Copy this to ~/.gitconfig.local and update with your email
+# 
+# This file is tracked in dotfiles as a template
+# The actual ~/.gitconfig.local is NOT tracked (see .gitignore)
+
+[user]
+	email = your@email.com
+
+# Add any other machine-specific settings here:
+# [credential]
+# 	helper = osxkeychain
