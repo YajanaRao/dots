@@ -87,13 +87,20 @@ My personal dotfiles managed as a bare Git repository.
        email = your.email@example.com
    ```
 
-7. **Set Fish as your default shell:**
+7. **Set up OpenCode configuration (optional):**
+   ```bash
+   cp ~/.config/opencode/.opencode.json.example ~/.config/opencode/.opencode.json
+   ```
+   
+   Edit `~/.config/opencode/.opencode.json` and add your API keys for the providers you use.
+
+8. **Set Fish as your default shell:**
    ```bash
    echo /opt/homebrew/bin/fish | sudo tee -a /etc/shells
    chsh -s /opt/homebrew/bin/fish
    ```
 
-8. **Reload Fish configuration:**
+9. **Reload Fish configuration:**
    ```fish
    source ~/.config/fish/config.fish
    ```
@@ -148,16 +155,19 @@ dots submodule update --recursive  # Update submodules if needed
 
 ## Security
 
-The following directories are **never** tracked:
+The following directories and files are **never** tracked:
 
 - `~/.ssh/` - SSH keys
 - `~/.config/gh/` - GitHub CLI credentials
 - `~/.config/github-copilot/` - GitHub Copilot tokens
 - `~/.gnupg/` - GPG keys
 - `~/.config/configstore/` - Various API tokens
+- `~/.config/opencode/.opencode.json` - OpenCode API keys
 - `node_modules/` - Dependencies
 
-Your email is stored in `~/.gitconfig.local` which is **not** tracked in the repository.
+**Machine-specific secrets:**
+- Your email is stored in `~/.gitconfig.local` (not tracked)
+- API keys are stored in `~/.config/opencode/.opencode.json` (not tracked)
 
 ## Neovim Configuration
 
