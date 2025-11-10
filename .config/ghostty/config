@@ -1,0 +1,27 @@
+# Fonts
+font-family = "GeistMonoNerdFont-Regular"
+font-family-bold = "GeistMonoNerdFont-Bold"
+font-family-italic = "Maple Mono"
+font-family-bold-italic = "Maple Mono"
+font-size = 13
+adjust-underline-position = 4
+font-thicken = true
+
+# Mouse
+mouse-hide-while-typing = true
+
+# Alt
+macos-option-as-alt = true
+
+# Theme
+theme = dark:/Users/yajanarao/Developer/forestflower/extras/ghostty/forestflower-night, light:/Users/yajanarao/Developer/forestflower/extras/ghostty/forestflower-day
+cursor-invert-fg-bg = true
+window-theme = ghostty
+
+# Window
+window-padding-y = 0
+
+# Starship prompt integration (Forest Flower)
+# Ensures proper rendering of powerline symbols
+shell-integration = detect
+command = /opt/homebrew/bin/fish
