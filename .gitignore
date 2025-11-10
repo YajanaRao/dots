@@ -1,0 +1,118 @@
+# Dotfiles .gitignore
+# Security-first approach to prevent credential leaks
+
+# =============================================================================
+# SENSITIVE DIRECTORIES - NEVER COMMIT
+# =============================================================================
+
+# GitHub CLI - contains auth tokens
+.config/gh/
+
+# GitHub Copilot - API keys
+.config/github-copilot/
+
+# MCP Hub - may contain server credentials
+.config/mcphub/
+
+# Config store - update notifiers with tokens
+.config/configstore/
+
+# SSH keys
+.ssh/
+
+# GPG keys
+.gnupg/
+
+# Any auth/credential directories
+.config/*/auth/
+.config/*/credentials/
+.config/*/tokens/
+
+# =============================================================================
+# DEPENDENCIES & BUILD ARTIFACTS
+# =============================================================================
+
+# Node modules
+node_modules/
+.config/*/node_modules/
+**/node_modules/
+
+# Build outputs
+dist/
+build/
+*.o
+*.pyc
+__pycache__/
+
+# =============================================================================
+# NESTED GIT REPOSITORIES
+# =============================================================================
+
+# Handle as submodules instead
+.config/*/.git/
+.config/*/.github/
+
+# Lazyvim and nvim-minimax have their own repos
+.config/lazyvim/.git/
+.config/nvim-minimax/.git/
+
+# =============================================================================
+# MACHINE-SPECIFIC CONFIGS
+# =============================================================================
+
+# Local overrides pattern
+*.local
+.gitconfig.local
+.config/*/*.local
+
+# =============================================================================
+# TEMPORARY & CACHE FILES
+# =============================================================================
+
+# Logs
+*.log
+
+# Caches
+*.cache
+.cache/
+
+# Vim/Neovim
+.netrwhist
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Linux
+.directory
+
+# =============================================================================
+# EDITOR & IDE
+# =============================================================================
+
+.vscode/
+.idea/
+
+# =============================================================================
+# EXCLUDE SPECIFIC FILES THAT MIGHT EXIST
+# =============================================================================
+
+# Don't track the bare git repo itself!
+.dots/
+
+# Brew bundle (if used, might contain private taps)
+Brewfile.lock.json
+
+# Environment variables
+.env
+.env.local
+.envrc
+
