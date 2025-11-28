@@ -16,10 +16,10 @@ macos-option-as-alt = true
 # Theme
 theme = dark:/Users/yajanarao/Developer/forestflower/extras/ghostty/forestflower-night, light:/Users/yajanarao/Developer/forestflower/extras/ghostty/forestflower-day
 cursor-invert-fg-bg = true
-window-theme = ghostty
 
 # Window
 window-padding-y = 0
+window-theme = ghostty
 
 # Starship prompt integration (Forest Flower)
 # Ensures proper rendering of powerline symbols

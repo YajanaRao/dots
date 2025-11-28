@@ -3,8 +3,6 @@ start-at-login = true
 on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
 
 [mode.main.binding]
-
-
     alt-f = 'fullscreen'
 
     alt-1 = 'workspace 1'
@@ -26,3 +24,8 @@ on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
     alt-shift-7 = 'move-node-to-workspace 7'
     alt-shift-8 = 'move-node-to-workspace 8'
     alt-shift-9 = 'move-node-to-workspace 9'
+
+
+[[on-window-detected]]
+    if.app-id="com.mitchellh.ghostty"
+    run= ["layout tiling",]
