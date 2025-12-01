@@ -21,6 +21,9 @@ abbr -a gfm git findmessage
 # lazygit
 abbr -a lg lazygit
 
+#opencode
+abbr -a oc opencode
+
 # File and Directories
 alias ls="eza --color=auto --icons=auto --group-directories-first"
 alias la 'eza --color=auto --icons=auto --group-directories-first --all --git'
