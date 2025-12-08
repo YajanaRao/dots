@@ -1,4 +1,6 @@
 alias vim=nvim
+alias mvim=NVIM_APPNAME=nvim-minimax nvim
+alias lvim=NVIM_APPNAME=lazyvim nvim
 
 # git
 abbr -a gs  git status -sb

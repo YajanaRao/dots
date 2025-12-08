@@ -212,7 +212,34 @@ function ghwr
 end
 
 # GitHub Workflow Status - Monitor latest workflow run with real-time progress
+# Modern design with native Ghostty progress bar support
 function ghws
+    # ANSI color codes
+    set -l reset "\033[0m"
+    set -l bold "\033[1m"
+    set -l dim "\033[2m"
+    set -l green "\033[32m"
+    set -l red "\033[31m"
+    set -l yellow "\033[33m"
+    set -l blue "\033[34m"
+    set -l cyan "\033[36m"
+    set -l magenta "\033[35m"
+    set -l white "\033[97m"
+    set -l gray "\033[90m"
+
+    # Spinner frames (modern, minimal)
+    set -l spinner_frames "◐" "◓" "◑" "◒"
+    set -l queued_frames "◜" "◠" "◝" "◞" "◡" "◟"
+    set -l spinner_index 1
+    
+    # Ghostty native progress bar control sequences
+    # OSC 9;4;state;value (state: 0=off, 1=progress, 2=error, 3=indeterminate)
+    set -l ghostty_progress_start "\033]9;4;1;"
+    set -l ghostty_progress_end "\033\\"
+    set -l ghostty_progress_off "\033]9;4;0\033\\"
+    set -l ghostty_progress_error "\033]9;4;2;100\033\\"
+    set -l ghostty_progress_indeterminate "\033]9;4;3\033\\"
+
     # Check if fzf is installed
     if not command -v fzf >/dev/null 2>&1
         echo "Error: fzf is not installed. Please install it first."
@@ -242,7 +269,7 @@ function ghws
     end
 
     # Fetch workflows with error handling
-    echo "Fetching workflows..."
+    printf "%b%s%b\n" $cyan "Fetching workflows..." $reset
     set workflows (gh workflow list --all 2>&1)
     if test $status -ne 0
         echo "Error: Failed to fetch workflows."
@@ -261,7 +288,7 @@ function ghws
     set workflow_name (echo $selected_workflow | cut -f1)
 
     # Fetch the latest run for the selected workflow
-    echo "Fetching latest run for: $workflow_name"
+    printf "%b%s%b %s\n" $cyan "Fetching latest run for:" $reset $workflow_name
     set latest_run_json (gh run list --workflow="$workflow_name" --limit=1 --json databaseId,status,conclusion,displayTitle,createdAt,headBranch 2>&1)
     
     if test $status -ne 0
@@ -280,9 +307,17 @@ function ghws
 
     # Start monitoring loop
     set monitoring true
+    set refresh_count 0
+    set last_progress_update 0
     
     while test "$monitoring" = "true"
-        # Fetch detailed run information
+        # Update spinner (4 frames instead of 10)
+        set spinner_index (math "($spinner_index % 4) + 1")
+        set queued_index (math "($spinner_index % 6) + 1")
+        set current_spinner $spinner_frames[$spinner_index]
+        set current_queued $queued_frames[$queued_index]
+        
+        # Fetch detailed run information including steps
         set run_data (gh run view $run_id --json status,conclusion,jobs,createdAt,updatedAt,displayTitle,headBranch,url 2>&1)
         
         if test $status -ne 0
@@ -316,40 +351,93 @@ function ghws
             set elapsed_display "N/A"
         end
 
-        # Clear screen and display header
-        clear
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        # Calculate job progress
+        set jobs_count (echo $run_data | jq -r '.jobs | length')
+        set completed_jobs (echo $run_data | jq -r '[.jobs[] | select(.status == "completed")] | length')
+        set in_progress_jobs (echo $run_data | jq -r '[.jobs[] | select(.status == "in_progress")] | length')
         
-        # Show status indicator
-        if test "$status_value" = "completed"
-            if test "$conclusion_value" = "success"
-                echo "✓ Workflow Completed: $workflow_name"
-            else if test "$conclusion_value" = "failure"
-                echo "✗ Workflow Failed: $workflow_name"
-            else if test "$conclusion_value" = "cancelled"
-                echo "⊘ Workflow Cancelled: $workflow_name"
-            else
-                echo "◆ Workflow $conclusion_value: $workflow_name"
+        # Build progress bar (simplified, modern style)
+        if test $jobs_count -gt 0
+            set progress_percent (math "floor($completed_jobs * 100 / $jobs_count)")
+            set bar_width 40
+            set filled_width (math "floor($completed_jobs * $bar_width / $jobs_count)")
+            set empty_width (math "$bar_width - $filled_width")
+            
+            set progress_bar ""
+            # Filled portion (completed)
+            for i in (seq 1 $filled_width)
+                set progress_bar "$progress_bar▓"
             end
-        else if test "$status_value" = "in_progress"
-            echo "🔄 Workflow Running: $workflow_name"
-        else if test "$status_value" = "queued"
-            echo "⏳ Workflow Queued: $workflow_name"
+            # Empty portion
+            for i in (seq 1 $empty_width)
+                set progress_bar "$progress_bar░"
+            end
         else
-            echo "◆ Workflow Status: $status_value - $workflow_name"
+            set progress_bar "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░"
+            set progress_percent 0
         end
         
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        echo ""
-        echo "Commit: $display_title"
-        echo "Branch: $head_branch | Run ID: $run_id | Elapsed: $elapsed_display"
-        echo "URL: $run_url"
-        echo ""
-        echo "Jobs:"
-        echo "─────────────────────────────────────────────────────"
+        # Update Ghostty native progress bar
+        # Update at most once per second to avoid timeout
+        set current_time_sec (date +%s)
+        if test (math "$current_time_sec - $last_progress_update") -ge 1
+            if test "$status_value" = "completed"
+                if test "$conclusion_value" = "success"
+                    printf "%b" "$ghostty_progress_start""100""$ghostty_progress_end"
+                else
+                    printf "%b" "$ghostty_progress_error"
+                end
+            else if test "$status_value" = "in_progress"
+                printf "%b" "$ghostty_progress_start""$progress_percent""$ghostty_progress_end"
+            else if test "$status_value" = "queued"
+                printf "%b" "$ghostty_progress_indeterminate"
+            end
+            set last_progress_update $current_time_sec
+        end
+
+        # Clear screen and display header
+        clear
         
-        # Parse and display jobs
-        set jobs_count (echo $run_data | jq -r '.jobs | length')
+        # Modern minimal header with thin borders
+        printf "\n"
+        
+        # Show status indicator with animation
+        if test "$status_value" = "completed"
+            if test "$conclusion_value" = "success"
+                printf " %b%s WORKFLOW COMPLETED%b %s\n" $green "✓" $reset $workflow_name
+            else if test "$conclusion_value" = "failure"
+                printf " %b%s WORKFLOW FAILED%b %s\n" $red "✗" $reset $workflow_name
+            else if test "$conclusion_value" = "cancelled"
+                printf " %b%s WORKFLOW CANCELLED%b %s\n" $yellow "⊘" $reset $workflow_name
+            else
+                printf " %b%s WORKFLOW %s%b %s\n" $yellow "◆" (string upper $conclusion_value) $reset $workflow_name
+            end
+        else if test "$status_value" = "in_progress"
+            printf " %b%s WORKFLOW RUNNING%b %s\n" $cyan $current_spinner $reset $workflow_name
+        else if test "$status_value" = "queued"
+            printf " %b%s WORKFLOW QUEUED%b %s\n" $yellow $current_queued $reset $workflow_name
+        else
+            printf " %b◆ WORKFLOW: %s%b %s\n" $yellow $status_value $reset $workflow_name
+        end
+        
+        printf " %b%s%b\n\n" $gray "────────────────────────────────────────────────────────────" $reset
+        
+        # Progress bar section (modern, clean)
+        if test "$status_value" != "completed"
+            printf " %bProgress%b  %b%s%b %3d%% %b(%d/%d jobs)%b\n\n" $dim $reset $cyan $progress_bar $reset $progress_percent $gray $completed_jobs $jobs_count $reset
+        end
+        
+        # Info section (compact, no emojis)
+        printf " %b Commit%b    %s\n" $gray $reset "$display_title"
+        printf " %b Branch%b    %s\n" $gray $reset "$head_branch"
+        printf " %b Elapsed%b   %s\n" $gray $reset "$elapsed_display"
+        printf " %b Run ID%b    %s\n" $gray $reset "$run_id"
+        
+        printf "\n %b%s%b\n" $gray "────────────────────────────────────────────────────────────" $reset
+        printf " %bJOBS%b\n" $bold $reset
+        printf " %b%s%b\n" $gray "────────────────────────────────────────────────────────────" $reset
+        
+        # Parse and display jobs with steps
         set job_index 0
         
         while test $job_index -lt $jobs_count
@@ -359,13 +447,19 @@ function ghws
             set job_started_at (echo $run_data | jq -r ".jobs[$job_index].startedAt // \"\"")
             set job_completed_at (echo $run_data | jq -r ".jobs[$job_index].completedAt // \"\"")
             
+            # Get steps for this job
+            set steps_count (echo $run_data | jq -r ".jobs[$job_index].steps | length // 0")
+            set completed_steps (echo $run_data | jq -r "[.jobs[$job_index].steps[] | select(.status == \"completed\")] | length // 0")
+            set current_step_name (echo $run_data | jq -r "[.jobs[$job_index].steps[] | select(.status == \"in_progress\")][0].name // \"\"")
+            set current_step_num (echo $run_data | jq -r "[.jobs[$job_index].steps[] | select(.status == \"in_progress\")][0].number // 0")
+            
             # Calculate job duration
             if test -n "$job_completed_at" -a "$job_completed_at" != "null"
                 set job_start_time (date -jf "%Y-%m-%dT%H:%M:%SZ" "$job_started_at" +%s 2>/dev/null)
                 set job_end_time (date -jf "%Y-%m-%dT%H:%M:%SZ" "$job_completed_at" +%s 2>/dev/null)
                 if test -n "$job_start_time" -a -n "$job_end_time"
                     set job_duration (math "$job_end_time - $job_start_time")
-                    set job_duration_display " - $job_duration"s
+                    set job_duration_display "$job_duration"s
                 else
                     set job_duration_display ""
                 end
@@ -373,7 +467,7 @@ function ghws
                 set job_start_time (date -jf "%Y-%m-%dT%H:%M:%SZ" "$job_started_at" +%s 2>/dev/null)
                 if test -n "$job_start_time"
                     set job_elapsed (math "$current_time - $job_start_time")
-                    set job_duration_display " - $job_elapsed"s
+                    set job_duration_display "$job_elapsed"s
                 else
                     set job_duration_display ""
                 end
@@ -381,68 +475,89 @@ function ghws
                 set job_duration_display ""
             end
             
-            # Display job with appropriate icon
+            # Display job with appropriate icon and color (clean, no box)
             if test "$job_status" = "completed"
                 if test "$job_conclusion" = "success"
-                    echo "  ✓ $job_name (success)$job_duration_display"
+                    printf " %b✓%b %s %b%s%b\n" $green $reset "$job_name" $dim "$job_duration_display" $reset
                 else if test "$job_conclusion" = "failure"
-                    echo "  ✗ $job_name (failure)$job_duration_display"
+                    printf " %b✗%b %s %b%s%b\n" $red $reset "$job_name" $dim "$job_duration_display" $reset
                 else if test "$job_conclusion" = "cancelled"
-                    echo "  ⊘ $job_name (cancelled)$job_duration_display"
+                    printf " %b⊘%b %s %b%s%b\n" $yellow $reset "$job_name" $dim "$job_duration_display" $reset
                 else if test "$job_conclusion" = "skipped"
-                    echo "  ⊙ $job_name (skipped)$job_duration_display"
+                    printf " %b⊙%b %b%s%b %b%s%b\n" $dim $reset $dim "$job_name" $reset $dim "$job_duration_display" $reset
                 else
-                    echo "  ◆ $job_name ($job_conclusion)$job_duration_display"
+                    printf " ◆ %s %b%s%b\n" "$job_name" $dim "$job_duration_display" $reset
                 end
             else if test "$job_status" = "in_progress"
-                echo "  🔄 $job_name (running)$job_duration_display"
+                printf " %b%s%b %s %b%s%b\n" $cyan $current_spinner $reset "$job_name" $cyan "$job_duration_display" $reset
+                # Show current step for in-progress jobs
+                if test -n "$current_step_name" -a "$current_step_name" != "null"
+                    printf "   %b→ Step %d/%d: %s%b\n" $dim $current_step_num $steps_count "$current_step_name" $reset
+                end
             else if test "$job_status" = "queued"
-                echo "  ⏳ $job_name (queued)"
+                printf " %b%s%b %b%s%b %bqueued%b\n" $yellow $current_queued $reset $dim "$job_name" $reset $yellow $reset
             else
-                echo "  ◆ $job_name ($job_status)"
+                printf " ◆ %s %b%s%b\n" "$job_name" $dim "$job_status" $reset
             end
             
             set job_index (math "$job_index + 1")
         end
         
-        echo ""
+        printf " %b%s%b\n" $gray "────────────────────────────────────────────────────────────" $reset
         
         # Check if workflow is completed
         if test "$status_value" = "completed"
-            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            # Clear native progress bar
+            printf "%b" "$ghostty_progress_off"
+            
             echo ""
             
-            # Show summary statistics
-            set total_jobs $jobs_count
+            # Show summary statistics with colors (clean, modern)
             set passed_jobs (echo $run_data | jq -r '[.jobs[] | select(.conclusion == "success")] | length')
             set failed_jobs (echo $run_data | jq -r '[.jobs[] | select(.conclusion == "failure")] | length')
             set skipped_jobs (echo $run_data | jq -r '[.jobs[] | select(.conclusion == "skipped")] | length')
             
-            echo "Summary:"
-            echo "  Total Jobs: $total_jobs"
-            echo "  Passed: $passed_jobs"
+            printf " %bSUMMARY%b\n" $bold $reset
+            printf " %b%s%b\n" $gray "────────────────────────────────────────────────────────────" $reset
+            printf " Total: %d" $jobs_count
+            if test $passed_jobs -gt 0
+                printf "   %b✓ Passed: %d%b" $green $passed_jobs $reset
+            end
             if test $failed_jobs -gt 0
-                echo "  Failed: $failed_jobs"
+                printf "   %b✗ Failed: %d%b" $red $failed_jobs $reset
             end
             if test $skipped_jobs -gt 0
-                echo "  Skipped: $skipped_jobs"
+                printf "   %b⊙ Skipped: %d%b" $dim $skipped_jobs $reset
             end
-            echo "  Duration: $elapsed_display"
-            echo ""
-            echo "Next Steps:"
+            printf "\n"
+            printf " Duration: %s\n" "$elapsed_display"
+            printf " %b%s%b\n\n" $gray "────────────────────────────────────────────────────────────" $reset
+            
+            printf " %bNext Steps%b\n" $bold $reset
             if test "$conclusion_value" = "failure"
-                echo "  • View logs: gh run view $run_id --log-failed"
-                echo "  • Rerun failed jobs: gh run rerun $run_id --failed"
+                printf "   %b•%b View failed logs: %bgh run view %s --log-failed%b\n" $red $reset $cyan $run_id $reset
+                printf "   %b•%b Rerun failed:     %bgh run rerun %s --failed%b\n" $yellow $reset $cyan $run_id $reset
             end
-            echo "  • View full details: gh run view $run_id"
-            echo "  • Open in browser: open $run_url"
+            printf "   %b•%b View details:     %bgh run view %s%b\n" $blue $reset $cyan $run_id $reset
+            printf "   %b•%b Open in browser:  %bopen %s%b\n" $blue $reset $cyan $run_url $reset
             echo ""
+            
+            # Play sound notification on macOS
+            if test (uname) = "Darwin"
+                if test "$conclusion_value" = "success"
+                    afplay /System/Library/Sounds/Glass.aiff 2>/dev/null &
+                else if test "$conclusion_value" = "failure"
+                    afplay /System/Library/Sounds/Basso.aiff 2>/dev/null &
+                end
+            end
             
             set monitoring false
         else
-            echo "Refreshing in 5 seconds... (Ctrl+C to stop)"
-            sleep 5
+            echo ""
+            # Clean refresh indicator
+            printf " %b%s Refreshing in 3s%b (Ctrl+C to stop)\n" $dim $current_spinner $reset
+            set refresh_count (math "$refresh_count + 1")
+            sleep 3
         end
     end
 end
-
