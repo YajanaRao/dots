@@ -309,23 +309,70 @@ function ghws
     set monitoring true
     set refresh_count 0
     set last_progress_update 0
+    set last_data_refresh 0
+    set animation_frame 0
+    set last_screen_update 0
+    
+    # Initial data fetch
+    set run_data (gh run view $run_id --json status,conclusion,jobs,createdAt,updatedAt,displayTitle,headBranch,url 2>&1)
+    if test $status -ne 0
+        echo "Error: Failed to fetch initial run details."
+        echo $run_data
+        return 1
+    end
+    set last_data_refresh (date +%s)
+    set last_screen_update (date +%s)
+    
+    # Track total steps across all jobs for better progress calculation
+    set total_steps 0
+    set total_completed_steps 0
     
     while test "$monitoring" = "true"
-        # Update spinner (4 frames instead of 10)
-        set spinner_index (math "($spinner_index % 4) + 1")
-        set queued_index (math "($spinner_index % 6) + 1")
+        # Update spinner animation every loop (fast animation)
+        set animation_frame (math "$animation_frame + 1")
+        set spinner_index (math "($animation_frame % 4) + 1")
+        set queued_index (math "($animation_frame % 6) + 1")
         set current_spinner $spinner_frames[$spinner_index]
         set current_queued $queued_frames[$queued_index]
         
-        # Fetch detailed run information including steps
-        set run_data (gh run view $run_id --json status,conclusion,jobs,createdAt,updatedAt,displayTitle,headBranch,url 2>&1)
+        # Fetch data only every 3 seconds
+        set current_time_for_refresh (date +%s)
+        set time_since_refresh (math "$current_time_for_refresh - $last_data_refresh")
+        set should_refresh false
         
-        if test $status -ne 0
-            echo "Error: Failed to fetch run details."
-            echo $run_data
-            return 1
+        if test $time_since_refresh -ge 3
+            # Fetch detailed run information including steps
+            set run_data (gh run view $run_id --json status,conclusion,jobs,createdAt,updatedAt,displayTitle,headBranch,url 2>&1)
+            
+            if test $status -ne 0
+                echo "Error: Failed to fetch run details."
+                echo $run_data
+                return 1
+            end
+            set last_data_refresh $current_time_for_refresh
+            set should_refresh true
         end
 
+        # Update display at 2 FPS (every 500ms) for smooth animation without flicker
+        set current_time_ms (math "(date +%s) * 1000 + "(date +%N | cut -c1-3 || echo 0))
+        set time_since_screen_update (math "$current_time_for_refresh - $last_screen_update")
+        set should_update_display false
+        
+        if test "$should_refresh" = "true"
+            set should_update_display true
+        else if test $time_since_screen_update -ge 1
+            # Update screen at most once per second for smooth animation
+            set should_update_display true
+        end
+        
+        if test "$should_update_display" = "false"
+            # Sleep 250ms for smooth 4fps spinner animation
+            sleep 0.25
+            continue
+        end
+        
+        set last_screen_update $current_time_for_refresh
+        
         # Parse run data
         set status_value (echo $run_data | jq -r '.status // "unknown"')
         set conclusion_value (echo $run_data | jq -r '.conclusion // "none"')
@@ -351,16 +398,31 @@ function ghws
             set elapsed_display "N/A"
         end
 
-        # Calculate job progress
+        # Calculate job and step progress
         set jobs_count (echo $run_data | jq -r '.jobs | length')
         set completed_jobs (echo $run_data | jq -r '[.jobs[] | select(.status == "completed")] | length')
         set in_progress_jobs (echo $run_data | jq -r '[.jobs[] | select(.status == "in_progress")] | length')
         
-        # Build progress bar (simplified, modern style)
+         # Calculate total steps and completed steps across all jobs
+        set total_steps 0
+        set total_completed_steps 0
         if test $jobs_count -gt 0
-            set progress_percent (math "floor($completed_jobs * 100 / $jobs_count)")
+            set job_idx 0
+            while test $job_idx -lt $jobs_count
+                set job_steps (echo $run_data | jq -r ".jobs[$job_idx].steps | length // 0")
+                # Count both completed AND skipped steps as "done" for progress calculation
+                set job_completed_steps (echo $run_data | jq -r "[.jobs[$job_idx].steps[] | select(.status == \"completed\" or .conclusion == \"skipped\")] | length // 0")
+                set total_steps (math "$total_steps + $job_steps")
+                set total_completed_steps (math "$total_completed_steps + $job_completed_steps")
+                set job_idx (math "$job_idx + 1")
+            end
+        end
+        
+        # Build progress bar based on steps, not jobs (more granular and accurate)
+        if test $total_steps -gt 0
+            set progress_percent (math "floor($total_completed_steps * 100 / $total_steps)")
             set bar_width 40
-            set filled_width (math "floor($completed_jobs * $bar_width / $jobs_count)")
+            set filled_width (math "floor($total_completed_steps * $bar_width / $total_steps)")
             set empty_width (math "$bar_width - $filled_width")
             
             set progress_bar ""
@@ -377,22 +439,17 @@ function ghws
             set progress_percent 0
         end
         
-        # Update Ghostty native progress bar
-        # Update at most once per second to avoid timeout
-        set current_time_sec (date +%s)
-        if test (math "$current_time_sec - $last_progress_update") -ge 1
-            if test "$status_value" = "completed"
-                if test "$conclusion_value" = "success"
-                    printf "%b" "$ghostty_progress_start""100""$ghostty_progress_end"
-                else
-                    printf "%b" "$ghostty_progress_error"
-                end
-            else if test "$status_value" = "in_progress"
-                printf "%b" "$ghostty_progress_start""$progress_percent""$ghostty_progress_end"
-            else if test "$status_value" = "queued"
-                printf "%b" "$ghostty_progress_indeterminate"
+        # Update Ghostty native progress bar based on steps
+        if test "$status_value" = "completed"
+            if test "$conclusion_value" = "success"
+                printf "%b" "$ghostty_progress_start""100""$ghostty_progress_end"
+            else
+                printf "%b" "$ghostty_progress_error"
             end
-            set last_progress_update $current_time_sec
+        else if test "$status_value" = "in_progress"
+            printf "%b" "$ghostty_progress_start""$progress_percent""$ghostty_progress_end"
+        else if test "$status_value" = "queued"
+            printf "%b" "$ghostty_progress_indeterminate"
         end
 
         # Clear screen and display header
@@ -422,9 +479,9 @@ function ghws
         
         printf " %b%s%b\n\n" $gray "────────────────────────────────────────────────────────────" $reset
         
-        # Progress bar section (modern, clean)
+        # Progress bar section (modern, clean) - show steps progress, not just jobs
         if test "$status_value" != "completed"
-            printf " %bProgress%b  %b%s%b %3d%% %b(%d/%d jobs)%b\n\n" $dim $reset $cyan $progress_bar $reset $progress_percent $gray $completed_jobs $jobs_count $reset
+            printf " %bProgress%b  %b%s%b %3d%% %b(%d/%d steps)%b\n\n" $dim $reset $cyan $progress_bar $reset $progress_percent $gray $total_completed_steps $total_steps $reset
         end
         
         # Info section (compact, no emojis)
@@ -554,10 +611,12 @@ function ghws
             set monitoring false
         else
             echo ""
-            # Clean refresh indicator
-            printf " %b%s Refreshing in 3s%b (Ctrl+C to stop)\n" $dim $current_spinner $reset
+            # Simple exit hint without constant refresh countdown
+            printf " %bPress Ctrl+C to stop monitoring%b\n" $dim $reset
+            
             set refresh_count (math "$refresh_count + 1")
-            sleep 3
+            # Sleep for 250ms for smooth spinner animation (4 FPS)
+            sleep 0.25
         end
     end
 end
