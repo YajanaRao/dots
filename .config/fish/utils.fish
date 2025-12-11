@@ -354,7 +354,6 @@ function ghws
         end
 
         # Update display at 2 FPS (every 500ms) for smooth animation without flicker
-        set current_time_ms (math "(date +%s) * 1000 + "(date +%N | cut -c1-3 || echo 0))
         set time_since_screen_update (math "$current_time_for_refresh - $last_screen_update")
         set should_update_display false
         
