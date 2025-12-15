@@ -414,8 +414,9 @@ function ghws
                 set total_steps (math "$total_steps + $job_steps")
                 set total_completed_steps (math "$total_completed_steps + $job_completed_steps")
                 set job_idx (math "$job_idx + 1")
-            end
-        end
+    end
+end
+
         
         # Build progress bar based on steps, not jobs (more granular and accurate)
         if test $total_steps -gt 0
@@ -614,8 +615,72 @@ function ghws
             printf " %bPress Ctrl+C to stop monitoring%b\n" $dim $reset
             
             set refresh_count (math "$refresh_count + 1")
-            # Sleep for 250ms for smooth spinner animation (4 FPS)
-            sleep 0.25
-        end
+             # Sleep for 250ms for smooth spinner animation (4 FPS)
+             sleep 0.25
+         end
+     end
+ end
+ 
+ # MP4 to WebM Converter - Converts MP4 files to WebM format while maintaining quality
+ function mp4_to_webm
+     # Check if input file is provided
+     if test (count $argv) -lt 1
+         echo "Usage: mp4_to_webm input.mp4 [output.webm]"
+         return 1
+     end
+ 
+     set input_file $argv[1]
+     set output_file (test (count $argv) -gt 1; and echo $argv[2]; or echo (string replace '.mp4' '.webm' $input_file))
+ 
+     # Check if input file exists
+     if not test -f "$input_file"
+         echo "Error: Input file '$input_file' not found"
+         return 1
+     end
+ 
+     # Check if ffmpeg is installed
+     if not command -v ffmpeg &>/dev/null
+         echo "Error: ffmpeg is not installed"
+         echo "Install it using: brew install ffmpeg"
+         return 1
+     end
+ 
+    # Check if file is actually a video
+    if not ffprobe -v error -select_streams v:0 -show_entries stream=codec_type -of csv=p=0 "$input_file" 2>/dev/null | grep -q video
+        echo "Error: Input file does not appear to be a valid video file"
+        return 1
     end
-end
+ 
+     echo "Converting: $input_file → $output_file"
+     echo "Using high-quality VP9 codec..."
+ 
+     # VP9 codec with quality preservation
+     # -b:v 0 = use CRF (Constant Rate Factor) instead of bitrate
+     # -crf 15 = quality level (0-51, lower is better, 15 is high quality)
+     # -c:v libvpx-vp9 = VP9 codec
+     # -c:a libopus = Opus audio codec
+     # -b:a 128k = audio bitrate
+     ffmpeg -i "$input_file" \
+         -c:v libvpx-vp9 \
+         -b:v 0 \
+         -crf 15 \
+         -c:a libopus \
+         -b:a 128k \
+         -tile-columns 6 \
+         -tile-rows 2 \
+         -threads 8 \
+         -y \
+         "$output_file"
+ 
+     if test $status -eq 0
+         set input_size (du -h "$input_file" | cut -f1)
+         set output_size (du -h "$output_file" | cut -f1)
+         echo "✓ Conversion successful!"
+         echo "Input:  $input_file ($input_size)"
+         echo "Output: $output_file ($output_size)"
+     else
+         echo "✗ Conversion failed"
+         return 1
+     end
+ end
+ 
