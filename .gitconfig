@@ -1,11 +1,6 @@
 # Git configuration - shared across machines
 # Machine-specific config (email) goes in ~/.gitconfig.local
 
-[user]
-	name = Yajana Rao
-	email = yajananrao@gmail.com
-	# Email is set in .gitconfig.local (not tracked)
-
 [core]
 	pager = delta
 
@@ -45,6 +40,7 @@
 # Create this file with: echo '[user]\n\temail = your@email.com' > ~/.gitconfig.local
 [include]
 	path = ~/.gitconfig.local
+
 [filter "lfs"]
 	required = true
 	clean = git-lfs clean -- %f
