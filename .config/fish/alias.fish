@@ -1,6 +1,6 @@
-alias vim=nvim
-alias mvim=NVIM_APPNAME=nvim-minimax nvim
-alias lvim=NVIM_APPNAME=lazyvim nvim
+abbr vim nvim
+abbr mvim NVIM_APPNAME=nvim-minimax nvim
+abbr lvim NVIM_APPNAME=lazyvim nvim
 
 # git
 abbr -a gs  git status -sb
@@ -27,6 +27,6 @@ abbr -a lg lazygit
 abbr -a oc opencode
 
 # File and Directories
-alias ls="eza --color=auto --icons=auto --group-directories-first"
+alias ls "eza --color=auto --icons=auto --group-directories-first"
 alias la 'eza --color=auto --icons=auto --group-directories-first --all --git'
 alias ll 'eza --color=auto --icons=auto --group-directories-first --all --git --long'

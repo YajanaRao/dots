@@ -402,7 +402,7 @@ function ghws
         set completed_jobs (echo $run_data | jq -r '[.jobs[] | select(.status == "completed")] | length')
         set in_progress_jobs (echo $run_data | jq -r '[.jobs[] | select(.status == "in_progress")] | length')
         
-         # Calculate total steps and completed steps across all jobs
+        # Calculate total steps and completed steps across all jobs
         set total_steps 0
         set total_completed_steps 0
         if test $jobs_count -gt 0
@@ -414,10 +414,9 @@ function ghws
                 set total_steps (math "$total_steps + $job_steps")
                 set total_completed_steps (math "$total_completed_steps + $job_completed_steps")
                 set job_idx (math "$job_idx + 1")
-    end
-end
+            end
+        end
 
-        
         # Build progress bar based on steps, not jobs (more granular and accurate)
         if test $total_steps -gt 0
             set progress_percent (math "floor($total_completed_steps * 100 / $total_steps)")
@@ -615,72 +614,224 @@ end
             printf " %bPress Ctrl+C to stop monitoring%b\n" $dim $reset
             
             set refresh_count (math "$refresh_count + 1")
-             # Sleep for 250ms for smooth spinner animation (4 FPS)
-             sleep 0.25
-         end
-     end
- end
- 
- # MP4 to WebM Converter - Converts MP4 files to WebM format while maintaining quality
- function mp4_to_webm
-     # Check if input file is provided
-     if test (count $argv) -lt 1
-         echo "Usage: mp4_to_webm input.mp4 [output.webm]"
-         return 1
-     end
- 
-     set input_file $argv[1]
-     set output_file (test (count $argv) -gt 1; and echo $argv[2]; or echo (string replace '.mp4' '.webm' $input_file))
- 
-     # Check if input file exists
-     if not test -f "$input_file"
-         echo "Error: Input file '$input_file' not found"
-         return 1
-     end
- 
-     # Check if ffmpeg is installed
-     if not command -v ffmpeg &>/dev/null
-         echo "Error: ffmpeg is not installed"
-         echo "Install it using: brew install ffmpeg"
-         return 1
-     end
- 
+            # Sleep for 250ms for smooth spinner animation (4 FPS)
+            sleep 0.25
+        end
+    end
+end
+
+# MP4 to WebM Converter - Converts MP4 files to WebM format while maintaining quality
+function mp4_to_webm
+    # Check if input file is provided
+    if test (count $argv) -lt 1
+        echo "Usage: mp4_to_webm input.mp4 [output.webm]"
+        return 1
+    end
+
+    set input_file $argv[1]
+    set output_file (test (count $argv) -gt 1; and echo $argv[2]; or echo (string replace '.mp4' '.webm' $input_file))
+
+    # Check if input file exists
+    if not test -f "$input_file"
+        echo "Error: Input file '$input_file' not found"
+        return 1
+    end
+
+    # Check if ffmpeg is installed
+    if not command -v ffmpeg &>/dev/null
+        echo "Error: ffmpeg is not installed"
+        echo "Install it using: brew install ffmpeg"
+        return 1
+    end
+
     # Check if file is actually a video
     if not ffprobe -v error -select_streams v:0 -show_entries stream=codec_type -of csv=p=0 "$input_file" 2>/dev/null | grep -q video
         echo "Error: Input file does not appear to be a valid video file"
         return 1
     end
- 
-     echo "Converting: $input_file → $output_file"
-     echo "Using high-quality VP9 codec..."
- 
-     # VP9 codec with quality preservation
-     # -b:v 0 = use CRF (Constant Rate Factor) instead of bitrate
-     # -crf 15 = quality level (0-51, lower is better, 15 is high quality)
-     # -c:v libvpx-vp9 = VP9 codec
-     # -c:a libopus = Opus audio codec
-     # -b:a 128k = audio bitrate
-     ffmpeg -i "$input_file" \
-         -c:v libvpx-vp9 \
-         -b:v 0 \
-         -crf 15 \
-         -c:a libopus \
-         -b:a 128k \
-         -tile-columns 6 \
-         -tile-rows 2 \
-         -threads 8 \
-         -y \
-         "$output_file"
- 
-     if test $status -eq 0
-         set input_size (du -h "$input_file" | cut -f1)
-         set output_size (du -h "$output_file" | cut -f1)
-         echo "✓ Conversion successful!"
-         echo "Input:  $input_file ($input_size)"
-         echo "Output: $output_file ($output_size)"
-     else
-         echo "✗ Conversion failed"
-         return 1
-     end
- end
- 
+
+    echo "Converting: $input_file → $output_file"
+    echo "Using high-quality VP9 codec..."
+
+    # VP9 codec with quality preservation
+    # -b:v 0 = use CRF (Constant Rate Factor) instead of bitrate
+    # -crf 15 = quality level (0-51, lower is better, 15 is high quality)
+    # -c:v libvpx-vp9 = VP9 codec
+    # -c:a libopus = Opus audio codec
+    # -b:a 128k = audio bitrate
+    ffmpeg -i "$input_file" \
+        -c:v libvpx-vp9 \
+        -b:v 0 \
+        -crf 15 \
+        -c:a libopus \
+        -b:a 128k \
+        -tile-columns 6 \
+        -tile-rows 2 \
+        -threads 8 \
+        -y \
+        "$output_file"
+
+    if test $status -eq 0
+        set input_size (du -h "$input_file" | cut -f1)
+        set output_size (du -h "$output_file" | cut -f1)
+        echo "✓ Conversion successful!"
+        echo "Input:  $input_file ($input_size)"
+        echo "Output: $output_file ($output_size)"
+    else
+        echo "✗ Conversion failed"
+        return 1
+    end
+end
+
+# AWS CloudFront Invalidation - Select a distribution and invalidate cache
+function aci
+    # ANSI color codes
+    set -l reset "\033[0m"
+    set -l bold "\033[1m"
+    set -l dim "\033[2m"
+    set -l green "\033[32m"
+    set -l red "\033[31m"
+    set -l yellow "\033[33m"
+    set -l cyan "\033[36m"
+    set -l gray "\033[90m"
+
+    # Check if fzf is installed
+    if not command -v fzf >/dev/null 2>&1
+        echo "Error: fzf is not installed. Please install it first."
+        echo "  macOS: brew install fzf"
+        return 1
+    end
+
+    # Check if aws CLI is installed
+    if not command -v aws >/dev/null 2>&1
+        echo "Error: aws CLI is not installed. Please install it first."
+        echo "  macOS: brew install awscli"
+        return 1
+    end
+
+    # Check if jq is installed
+    if not command -v jq >/dev/null 2>&1
+        echo "Error: jq is not installed. Please install it first."
+        echo "  macOS: brew install jq"
+        return 1
+    end
+
+    # Get AWS profile (use argument or find first SSO profile)
+    set -l aws_profile ""
+    if test (count $argv) -gt 0
+        set aws_profile $argv[1]
+    else
+        # Find the first SSO profile from ~/.aws/config
+        set aws_profile (grep '^\[profile ' ~/.aws/config 2>/dev/null | head -1 | sed 's/\[profile \(.*\)\]/\1/')
+        if test -z "$aws_profile"
+            echo "Error: No AWS profile found. Please specify a profile or configure AWS SSO."
+            echo "Usage: aci [profile-name]"
+            return 1
+        end
+    end
+
+    # Check if AWS SSO session is active
+    printf "%b%s%b %s\n" $cyan "Checking AWS session..." $reset ""
+    set -l caller_identity (aws sts get-caller-identity --profile "$aws_profile" 2>&1)
+    if test $status -ne 0
+        printf "%b%s%b\n" $yellow "AWS session expired or not logged in." $reset
+        echo "Attempting to login..."
+        aws sso login --profile "$aws_profile"
+        if test $status -ne 0
+            printf "%b%s%b\n" $red "Error: Failed to login to AWS SSO." $reset
+            return 1
+        end
+    end
+
+    # Fetch CloudFront distributions
+    printf "%b%s%b\n" $cyan "Fetching CloudFront distributions..." $reset
+    set -l distributions_json (aws cloudfront list-distributions --profile "$aws_profile" \
+        --query "DistributionList.Items[?Status=='Deployed'].{Id:Id,Domain:DomainName,Aliases:Aliases.Items,Status:Status}" \
+        --output json 2>&1)
+
+    if test $status -ne 0
+        printf "%b%s%b\n" $red "Error: Failed to fetch CloudFront distributions." $reset
+        echo $distributions_json
+        return 1
+    end
+
+    # Check if there are any distributions
+    set -l dist_count (echo $distributions_json | jq 'length')
+    if test "$dist_count" = "0" -o -z "$dist_count"
+        printf "%b%s%b\n" $yellow "No active CloudFront distributions found." $reset
+        return 0
+    end
+
+    # Format distributions for fzf selection
+    # Format: "DISTRIBUTION_ID | domain1, domain2 (cloudfront-domain)"
+    set -l formatted_list (echo $distributions_json | jq -r '.[] | 
+        .Id as $id | 
+        .Domain as $cf_domain |
+        (if .Aliases and (.Aliases | length > 0) then (.Aliases | join(", ")) else "No alias" end) as $aliases |
+        "\($id) | \($aliases) (\($cf_domain))"')
+
+    if test -z "$formatted_list"
+        printf "%b%s%b\n" $yellow "No distributions to display." $reset
+        return 0
+    end
+
+    # Select distribution using fzf
+    set -l selected (printf '%s\n' $formatted_list | fzf --height=40% --reverse --header="Select a CloudFront distribution to invalidate" --ansi)
+    
+    if test -z "$selected"
+        echo "No distribution selected. Exiting."
+        return 0
+    end
+
+    # Extract distribution ID (first field before |)
+    set -l distribution_id (echo $selected | cut -d'|' -f1 | string trim)
+    set -l distribution_info (echo $selected | cut -d'|' -f2 | string trim)
+
+    # Confirm invalidation
+    printf "\n"
+    printf " %b%s%b\n" $bold "Invalidation Details" $reset
+    printf " %b%s%b\n" $gray "────────────────────────────────────────────────────────────" $reset
+    printf " %bDistribution:%b %s\n" $dim $reset "$distribution_id"
+    printf " %bDomains:%b      %s\n" $dim $reset "$distribution_info"
+    printf " %bPath:%b         /*\n" $dim $reset
+    printf " %b%s%b\n" $gray "────────────────────────────────────────────────────────────" $reset
+    printf "\n"
+
+    # Ask for confirmation
+    read -l -P "Create invalidation for /* ? [y/N] " confirm
+    if not string match -qi "y" "$confirm"
+        echo "Cancelled."
+        return 0
+    end
+
+    # Create invalidation
+    printf "\n%b%s%b\n" $cyan "Creating invalidation..." $reset
+    set -l invalidation_result (aws cloudfront create-invalidation \
+        --profile "$aws_profile" \
+        --distribution-id "$distribution_id" \
+        --paths "/*" \
+        --output json 2>&1)
+
+    if test $status -ne 0
+        printf "%b%s%b\n" $red "Error: Failed to create invalidation." $reset
+        echo $invalidation_result
+        return 1
+    end
+
+    # Parse result
+    set -l invalidation_id (echo $invalidation_result | jq -r '.Invalidation.Id')
+    set -l invalidation_status (echo $invalidation_result | jq -r '.Invalidation.Status')
+    set -l create_time (echo $invalidation_result | jq -r '.Invalidation.CreateTime')
+
+    printf "\n"
+    printf " %b✓ Invalidation created successfully!%b\n" $green $reset
+    printf " %b%s%b\n" $gray "────────────────────────────────────────────────────────────" $reset
+    printf " %bInvalidation ID:%b %s\n" $dim $reset "$invalidation_id"
+    printf " %bStatus:%b         %s\n" $dim $reset "$invalidation_status"
+    printf " %bCreated:%b        %s\n" $dim $reset "$create_time"
+    printf " %b%s%b\n" $gray "────────────────────────────────────────────────────────────" $reset
+    printf "\n"
+    printf " %bTip:%b Check status with:\n" $dim $reset
+    printf "   aws cloudfront get-invalidation --distribution-id %s --id %s --profile %s\n" "$distribution_id" "$invalidation_id" "$aws_profile"
+    printf "\n"
+end

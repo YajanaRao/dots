@@ -16,6 +16,7 @@ macos-option-as-alt = true
 # Theme
 theme = dark:/Users/yajanarao/Developer/forestflower/extras/ghostty/forestflower-night, light:/Users/yajanarao/Developer/forestflower/extras/ghostty/forestflower-day
 cursor-invert-fg-bg = true
+background-opacity = 0.9
 
 # Window
 window-padding-y = 0
@@ -25,3 +26,4 @@ window-theme = ghostty
 # Ensures proper rendering of powerline symbols
 shell-integration = detect
 command = /opt/homebrew/bin/fish
+keybind = shift+enter=text:\x1b\r

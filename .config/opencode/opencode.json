@@ -1,0 +1,51 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "permission": {
+    "websearch": "allow"
+  },
+  "mcp": {
+    "playwright": {
+      "type": "local",
+      "command": ["npx", "@playwright/mcp@latest"],
+      "enabled": true
+    },
+    "posthog": {
+      "type": "local",
+      "command": [
+        "npx",
+        "-y",
+        "mcp-remote@latest",
+        "https://mcp.posthog.com/sse",
+        "--header",
+        "Authorization:${POSTHOG_AUTH_HEADER}"
+      ],
+      "environment": {
+        "POSTHOG_AUTH_HEADER": "{env:POSTHOG_AUTH_HEADER}"
+      },
+      "enabled": true
+    },
+    "shadcn": {
+      "type": "local",
+      "command": ["npx", "shadcn@latest", "mcp"]
+    },
+    "figma-desktop": {
+      "type": "remote",
+      "enabled": true,
+      "url": "http://127.0.0.1:3845/mcp"
+    },
+    "excalidraw": {
+      "type": "remote",
+      "enabled": true,
+      "url": "https://mcp.excalidraw.com/mcp"
+    },
+    "chrome-devtools": {
+      "type": "local",
+      "command": ["npx", "-y", "chrome-devtools-mcp@latest"]
+    },
+    "supabase": {
+      "type": "remote",
+      "url": "https://mcp.supabase.com/mcp?project_ref=wqatrgzbpnpxmgxknzfh&read_only=true",
+      "enabled": true
+    }
+  }
+}

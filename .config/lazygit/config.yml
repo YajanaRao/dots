@@ -193,7 +193,10 @@ keybinding:
     update: u
     bulkMenu: b
 os:
-  editPreset: "nvim-remote"
+  edit: 'nvim {{filename}}'
+  editAtLine: 'nvim +{{line}} {{filename}}'
+  editAtLineAndWait: 'nvim +{{line}} {{filename}}'
+  openDirInEditor: 'nvim {{dir}}'
 disableStartupPopups: false
 customCommands:
   - key: "b"
