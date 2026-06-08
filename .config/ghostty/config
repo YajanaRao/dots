@@ -1,11 +1,21 @@
-# Fonts
+# Fonts - Hybrid: Geist for body, Maple for italics/comments
 font-family = "GeistMonoNerdFont-Regular"
 font-family-bold = "GeistMonoNerdFont-Bold"
-font-family-italic = "Maple Mono"
-font-family-bold-italic = "Maple Mono"
-font-size = 13
+font-family-italic = "Maple Mono NF"
+font-family-bold-italic = "Maple Mono NF"
+font-size = 16
 adjust-underline-position = 4
+adjust-cell-width = -1
+adjust-cell-height = 6
 font-thicken = true
+
+# Enable ligatures from Maple Mono (inherited via italic)
+font-feature = calt    # contextual alternates (ligatures)
+font-feature = ss01    # slashed zero
+font-feature = ss02    # alternate 1/l/i
+font-feature = ss03    # alternate a/g
+font-feature = ss04    # wider punctuation
+font-feature = ss05    # alternate @ and $
 
 # Mouse
 mouse-hide-while-typing = true
@@ -15,15 +25,17 @@ macos-option-as-alt = true
 
 # Theme
 theme = dark:/Users/yajanarao/Developer/forestflower/extras/ghostty/forestflower-night, light:/Users/yajanarao/Developer/forestflower/extras/ghostty/forestflower-day
-cursor-invert-fg-bg = true
+cursor-style = bar
 background-opacity = 0.9
 
 # Window
 window-padding-y = 0
 window-theme = ghostty
+macos-titlebar-style = tabs
 
-# Starship prompt integration (Forest Flower)
-# Ensures proper rendering of powerline symbols
-shell-integration = detect
-command = /opt/homebrew/bin/fish
-keybind = shift+enter=text:\x1b\r
+# Launch fish as the shell
+command = /opt/homebrew/bin/fish --login --interactive
+
+# Shell integration features (prompt marking, cwd tracking, etc.)
+shell-integration = fish
+shell-integration-features = cursor,sudo,title

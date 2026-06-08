@@ -5,6 +5,9 @@
 # SENSITIVE DIRECTORIES - NEVER COMMIT
 # =============================================================================
 
+# Fish universal variables - may contain API keys/secrets
+.config/fish/fish_variables
+
 # GitHub CLI - contains auth tokens
 .config/gh/
 

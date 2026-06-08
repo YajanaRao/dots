@@ -835,3 +835,15 @@ function aci
     printf "   aws cloudfront get-invalidation --distribution-id %s --id %s --profile %s\n" "$distribution_id" "$invalidation_id" "$aws_profile"
     printf "\n"
 end
+
+# Yazi
+function y
+	set tmp (mktemp -t "yazi-cwd.XXXXXX")
+	command yazi $argv --cwd-file="$tmp"
+	if read -z cwd < "$tmp"; and [ "$cwd" != "$PWD" ]; and test -d "$cwd"
+		builtin cd -- "$cwd"
+	end
+	command rm -f -- "$tmp"
+end
+
+
