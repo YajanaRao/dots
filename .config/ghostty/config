@@ -9,14 +9,6 @@ adjust-cell-width = -1
 adjust-cell-height = 6
 font-thicken = true
 
-# Enable ligatures from Maple Mono (inherited via italic)
-font-feature = calt    # contextual alternates (ligatures)
-font-feature = ss01    # slashed zero
-font-feature = ss02    # alternate 1/l/i
-font-feature = ss03    # alternate a/g
-font-feature = ss04    # wider punctuation
-font-feature = ss05    # alternate @ and $
-
 # Mouse
 mouse-hide-while-typing = true
 
