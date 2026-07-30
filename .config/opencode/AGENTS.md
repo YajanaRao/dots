@@ -51,6 +51,28 @@ Comments should explain WHY, not WHAT. The code itself should be readable enough
 
 If deleting the comment loses zero information, delete it. Self-documenting code with good naming > commented code.
 
+# ClickUp MCP
+
+When connected to the `clickup` MCP server:
+- **MUST** use Workspace (Team) ID = `90161614672`
+- **MUST** create tasks inside the latest sprint List within Sprint Folder ID = `90169740094`
+- To find the latest sprint: list the sprint Lists in folder `90169740094` and pick the one with the most recent start/due date (i.e. the current/active sprint)
+- To assign tasks to me: resolve the current user's ID at runtime via the ClickUp "get authorized user" tool (do NOT hardcode a user ID)
+- **MUST** use a result limit of `10` for ALL ClickUp task search/list operations
+
+## ClickUp Workflow
+
+When asked to work on a feature or fix an issue:
+1. Determine the latest sprint List in Sprint Folder `90169740094`
+2. Create a ClickUp task in that sprint List with a clear title and description, assigned to the current authorized user
+3. Note the task's **custom ID** (format `INAI-<number>`) and the regular task ID (e.g., `86abc123`)
+4. Create a git branch named `<type>/INAI-<number>-<short-description>`:
+   - `<type>` is a Conventional Commits type derived from the nature of the changes: `feat`, `fix`, `chore`, `refactor`, `docs`, `test`, etc.
+   - `INAI-<number>` is the task's **custom ID** returned by ClickUp (do NOT use the regular task ID here)
+   - `<short-description>` is a kebab-case slug derived from the task title
+   - Example: `feat/INAI-123-add-dark-mode`
+5. After completing the work, create a GitHub PR referencing the ClickUp task in the PR body (e.g., link to `https://app.clickup.com/t/<task-id>`)
+
 #Important
 Do not make changes till you have 90% or above confidence about the change.
 Always ask clarifying questions before making an assumption.

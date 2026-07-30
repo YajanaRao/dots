@@ -9,7 +9,7 @@ gui:
   skipStashWarning: false
   sidePanelWidth: 0.3333
   expandFocusedSidePanel: false
-  mainPanelSplitMode: flexible
+  mainPanelSplitMode: horizontal
   language: auto
   timeFormat: 02 Jan 06 15:04 MST
   commitLength:
@@ -193,10 +193,10 @@ keybinding:
     update: u
     bulkMenu: b
 os:
-  edit: 'nvim {{filename}}'
-  editAtLine: 'nvim +{{line}} {{filename}}'
-  editAtLineAndWait: 'nvim +{{line}} {{filename}}'
-  openDirInEditor: 'nvim {{dir}}'
+  edit: "nvim {{filename}}"
+  editAtLine: "nvim +{{line}} {{filename}}"
+  editAtLineAndWait: "nvim +{{line}} {{filename}}"
+  openDirInEditor: "nvim {{dir}}"
 disableStartupPopups: false
 customCommands:
   - key: "b"

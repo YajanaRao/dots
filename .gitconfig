@@ -40,9 +40,15 @@
 # Create this file with: echo '[user]\n\temail = your@email.com' > ~/.gitconfig.local
 [include]
 	path = ~/.gitconfig.local
+	# Forest Flower delta diff theme — defines forestflower-day / -night as named
+	# features. The active one is chosen at runtime via the DELTA_FEATURES env var,
+	# set per-command from macOS appearance by __ff_delta_features in config.fish.
+	path = ~/.config/delta/forestflower.gitconfig
 
 [filter "lfs"]
 	required = true
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
+[user]
+	email = yajana@humanisys.ai

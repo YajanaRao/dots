@@ -22,12 +22,18 @@ background-opacity = 0.9
 
 # Window
 window-padding-y = 0
+# Split leftover cell-division pixels evenly top/bottom instead of pooling
+# the remainder below the statusline.
+window-padding-balance = true
 window-theme = ghostty
 macos-titlebar-style = tabs
 
-# Launch fish as the shell
-command = /opt/homebrew/bin/fish --login --interactive
+command = /opt/homebrew/bin/nu
+
+# Tell Nushell where to read/write its config.
+env = XDG_CONFIG_HOME=/Users/yajanarao/.config
 
 # Shell integration features (prompt marking, cwd tracking, etc.)
-shell-integration = fish
-shell-integration-features = cursor,sudo,title
+shell-integration = detect
+shell-integration-features = cursor,title
+

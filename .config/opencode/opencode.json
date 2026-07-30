@@ -46,6 +46,24 @@
       "type": "remote",
       "url": "https://mcp.supabase.com/mcp?project_ref=wqatrgzbpnpxmgxknzfh&read_only=true",
       "enabled": true
+    },
+    "chicken-api-installation": {
+      "type": "remote",
+      "url": "https://mcp.scalar.com/mcp/e48fa247-3b18-496b-bbc3-7f81fa7628f1",
+      "enabled": true
+    },
+    "mongodb-mcp-server": {
+      "type": "local",
+      "command": ["npx", "-y", "mongodb-mcp-server@latest", "--readOnly"],
+      "environment": {
+        "MDB_MCP_CONNECTION_STRING": "mongodb://localhost:27017/"
+      },
+      "enabled": true
+    },
+    "clickup": {
+      "type": "local",
+      "command": ["npx", "-y", "mcp-remote", "https://mcp.clickup.com/mcp"],
+      "enabled": true
     }
   }
 }
