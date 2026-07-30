@@ -5,11 +5,12 @@ My personal dotfiles managed as a bare Git repository.
 ## Features
 
 - **Bare Git Repository**: Clean home directory without nested `.git` folders
-- **Fish Shell**: Modern shell with custom aliases and utilities
+- **Nushell Shell**: Modern shell with custom aliases and utilities
 - **Ghostty**: GPU-accelerated terminal emulator
 - **Aerospace**: Tiling window manager for macOS
 - **Neovim**: Custom configuration as a Git submodule
 - **OpenCode**: AI coding assistant configuration
+- **Claude Code**: AI coding assistant configuration
 - **Security-First**: `.gitignore` excludes sensitive directories (ssh, tokens, credentials)
 
 ## What's Included
@@ -18,11 +19,7 @@ My personal dotfiles managed as a bare Git repository.
 ~/.gitignore                          # Global ignore rules
 ~/.gitconfig                          # Shared Git configuration
 ~/.gitconfig.local.example            # Template for machine-specific settings
-~/.config/fish/                       # Fish shell configuration
-  ├── config.fish                     # Main configuration
-  ├── alias.fish                      # Command aliases
-  ├── utils.fish                      # Utility functions
-  └── dotfiles.fish                   # Dotfiles management abbreviations
+~/.config/nushell/                    # nushell shell configuration
 ~/.config/ghostty/config              # Terminal emulator settings
 ~/.config/aerospace/aerospace.toml    # Window manager configuration
 ~/.config/opencode/                   # OpenCode AI assistant
@@ -35,10 +32,11 @@ My personal dotfiles managed as a bare Git repository.
 ## Prerequisites
 
 - Git
-- Fish shell (`brew install fish`)
+- Nushell shell (`brew install nushell`)
 - Ghostty (`brew install --cask ghostty`)
 - Aerospace (`brew install --cask nikitabobko/tap/aerospace`)
 - Neovim (`brew install neovim`)
+- Herdr (`brew install herdr`)
 
 ## Installation
 
@@ -59,12 +57,6 @@ My personal dotfiles managed as a bare Git repository.
    dots checkout main
    ```
    
-   If you get errors about existing files, backup or remove them:
-   ```bash
-   mkdir -p ~/.dotfiles-backup
-   dots checkout 2>&1 | grep -E "\s+\." | awk '{print $1}' | xargs -I{} mv {} ~/.dotfiles-backup/{}
-   dots checkout main
-   ```
 
 4. **Configure the repository to not show untracked files:**
    ```bash
