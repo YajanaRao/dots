@@ -57,7 +57,7 @@ def make-theme [palette: record]: nothing -> record {
 
 export def forestflower-night []: nothing -> record {
   make-theme {
-    surface_raised: "#3D484D"
+    surface_raised: "#23292F"
     secondary: "#BEC97E"
     info: "#92BFDB"
     muted: "#7A8478"

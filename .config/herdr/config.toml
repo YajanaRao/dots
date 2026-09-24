@@ -1,13 +1,99 @@
-[keys]
-# alt is reserved for AeroSpace, so navigation avoids it
-next_agent = "prefix+]"
-previous_agent = "prefix+["
-focus_agent = "prefix+ctrl+1..9"
-switch_workspace = "prefix+shift+1..9"
-
-[terminal]
-default_shell = "/opt/homebrew/bin/nu"
+onboarding = false
 
 [theme]
 name = "terminal"
-auto_switch = false
+auto_switch = true
+
+[theme.custom.light]
+accent = "#6F5800"
+panel_bg = "#FDF6E3"
+sidebar_bg = "#F4F0D9"
+active_row_bg = "#E1E0C1"
+selection_bg = "#D3D5B0"
+surface0 = "#EFEBD4"
+surface1 = "#DEDAC2"
+surface_dim = "#F4F0D9"
+overlay0 = "#9A9588"
+overlay1 = "#706B5E"
+text = "#3F3A32"
+subtext0 = "#5C574C"
+mauve = "#8B5E3C"
+green = "#4D6B0E"
+yellow = "#AD8301"
+red = "#942822"
+blue = "#1A4F8C"
+teal = "#3D5A1F"
+peach = "#A84B1C"
+
+[theme.custom.dark]
+accent = "#FFC600"
+panel_bg = "#13181D"
+sidebar_bg = "#191E24"
+active_row_bg = "#23292F"
+selection_bg = "#2E342D"
+surface0 = "#1D2329"
+surface1 = "#2B3239"
+surface_dim = "#13181D"
+overlay0 = "#7A8478"
+overlay1 = "#B0A898"
+text = "#D3C6AA"
+subtext0 = "#B0A898"
+mauve = "#C4A07A"
+green = "#BEC97E"
+yellow = "#ECCB60"
+red = "#F89A8A"
+blue = "#92BFDB"
+teal = "#8FA85A"
+peach = "#EC8B49"
+
+# Highlights, borders, navigate chrome — separate from theme.custom.accent.
+# Does not follow auto_switch; bright gold works on cream and forest floors.
+[ui]
+accent = "#FFC600"
+
+[ui.toast]
+delivery = "terminal"
+delay_seconds = 1
+
+[keys]
+previous_workspace = "prefix+shift+p"
+next_workspace = "prefix+shift+n"
+switch_workspace = "prefix+shift+1..9"
+new_workspace = "prefix+shift+c"
+# Default target opener is dead with toast delivery = "terminal"; prefix+o is
+# rebound to the focus-attention command below instead.
+open_notification_target = ""
+
+# Open lazygit as a session-modal popup from any workspace.
+[[keys.command]]
+key = "prefix+alt+g"
+type = "popup"
+command = "lazygit"
+width = "100%"
+height = "100%"
+
+# Open a scratch shell as a session-modal popup; exit the shell to close it.
+[[keys.command]]
+key = "prefix+t"
+type = "popup"
+command = "exec \"${SHELL:-sh}\""
+description = "open scratch terminal"
+width = "80%"
+height = "80%"
+
+# Trigger a GitHub workflow run: gum pickers in a session-modal popup.
+[[keys.command]]
+key = "prefix+alt+r"
+type = "popup"
+command = "$HOME/.local/bin/ghr"
+description = "trigger GitHub workflow"
+width = 64
+height = 22
+
+# Jump to the first agent needing attention (blocked > done). Works with any
+# toast delivery setting since it queries live state instead of notifications.
+[[keys.command]]
+key = "prefix+o"
+type = "shell"
+command = "$HOME/.local/bin/herdr-focus-attention"
+description = "focus agent needing attention"

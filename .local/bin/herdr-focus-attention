@@ -1,0 +1,17 @@
+#!/bin/sh
+# herdr-focus-attention — jump to the first agent that needs attention:
+# "blocked" (asking for input) first, then "done" (finished unseen work).
+# Bound to prefix+o as a herdr [[keys.command]] of type "shell".
+
+set -u
+herdr="${HERDR_BIN_PATH:-herdr}"
+
+target=$("$herdr" agent list | jq -r '
+  .result.agents
+  | (map(select(.agent_status == "blocked")) + map(select(.agent_status == "done")))
+  | .[0].pane_id // empty
+')
+
+if [ -n "$target" ]; then
+  "$herdr" agent focus "$target" >/dev/null
+fi

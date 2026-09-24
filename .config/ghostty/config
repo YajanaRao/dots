@@ -1,12 +1,22 @@
+
 # Fonts - Hybrid: Geist for body, Maple for italics/comments
-font-family = "GeistMonoNerdFont-Regular"
-font-family-bold = "GeistMonoNerdFont-Bold"
-font-family-italic = "Maple Mono NF"
-font-family-bold-italic = "Maple Mono NF"
-font-size = 16
-adjust-underline-position = 4
-adjust-cell-width = -1
-adjust-cell-height = 6
+# font-family = "GeistMonoNerdFont-Regular"
+# Iosevka Term = narrow default width (0.5em vs Extended's ~0.575em):
+# ~15% more columns at the same size, same glyphs, same line height.
+font-family = "Iosevka Term"
+# font-family = "Iosevka Extended"
+# font-feature = ss04
+# font-feature = zero
+# font-feature = -calt
+# font-family-bold = "GeistMonoNerdFont-Bold"
+# font-family-italic = "Maple Mono NF"
+# font-family-bold-italic = "Maple Mono NF"
+font-size = 14
+# adjust-underline-position = 4
+# adjust-cell-width = -1
+# Density without rushing: smaller glyphs, but give the leading back
+# so lines keep their air. Raise this if it ever feels cramped.
+adjust-cell-height = 2
 font-thicken = true
 
 # Mouse
@@ -18,7 +28,7 @@ macos-option-as-alt = true
 # Theme
 theme = dark:/Users/yajanarao/Developer/forestflower/extras/ghostty/forestflower-night, light:/Users/yajanarao/Developer/forestflower/extras/ghostty/forestflower-day
 cursor-style = bar
-background-opacity = 0.9
+# background-opacity = 0.9
 
 # Window
 window-padding-y = 0
@@ -28,12 +38,10 @@ window-padding-balance = true
 window-theme = ghostty
 macos-titlebar-style = tabs
 
-command = /opt/homebrew/bin/nu
-
-# Tell Nushell where to read/write its config.
-env = XDG_CONFIG_HOME=/Users/yajanarao/.config
-
 # Shell integration features (prompt marking, cwd tracking, etc.)
 shell-integration = detect
 shell-integration-features = cursor,title
 
+# omp
+keybind = alt+backspace=text:\x1b\x7f
+keybind = shift+enter=text:\n
