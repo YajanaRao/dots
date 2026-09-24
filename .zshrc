@@ -1,5 +1,6 @@
 eval "$(zoxide init zsh)"
 eval "$(starship init zsh)"
+export PATH="$HOME/.local/bin:$PATH"
 export PATH="/Users/yajanarao/.bun/bin:$PATH"
 
 export NVM_DIR="$HOME/.nvm"
