@@ -54,6 +54,9 @@ tab_bar_right = [
   { type = "command", command = "$HOME/.local/bin/ghr-status", interval_seconds = 15, timeout_seconds = 10 },
 ]
 
+[ui.sidebar.spaces]
+rows = [["state_icon", "workspace"], ["branch", "git_status"], ["$ghr"]]
+
 [ui.toast]
 delivery = "terminal"
 delay_seconds = 1

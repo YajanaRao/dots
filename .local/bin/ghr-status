@@ -1,26 +1,47 @@
 #!/bin/sh
-# ghr-status — one-line flag for the last ghr-triggered run (herdr tab bar).
+# ghr-status — flag for the last ghr-triggered run: herdr tab bar + sidebar token.
 set -u
 
-state="${XDG_STATE_HOME:-$HOME/.local/state}/ghr/run"
-[ -f "$state" ] || exit 0
+state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/ghr"
+state="$state_dir/run"
+reported="$state_dir/reported"
+herdr="${HERDR_BIN_PATH:-herdr}"
+
+clear_token() {
+  [ -f "$reported" ] || return 0
+  ws=$(sed -n '1p' "$reported")
+  [ -n "$ws" ] && "$herdr" workspace report-metadata "$ws" --source ghr --clear-token ghr >/dev/null 2>&1
+  rm -f "$reported"
+}
+
+[ -f "$state" ] || { clear_token; exit 0; }
 
 repo=$(sed -n '1p' "$state")
 id=$(sed -n '2p' "$state")
 name=$(sed -n '3p' "$state")
-final=$(sed -n '4p' "$state")
-{ [ -n "$repo" ] && [ -n "$id" ]; } || { rm -f "$state"; exit 0; }
+ws=$(sed -n '4p' "$state")
+final=$(sed -n '5p' "$state")
+{ [ -n "$repo" ] && [ -n "$id" ]; } || { rm -f "$state"; clear_token; exit 0; }
 
 now=$(date +%s)
 
 icon() { case "$1" in success) printf '✓';; failure) printf '✗';; cancelled) printf '⊘';; in_progress) printf '●';; *) printf '○';; esac; }
 dur() { s=$1; if [ "$s" -ge 3600 ]; then printf '%dh%02dm' $((s/3600)) $((s%3600/60)); elif [ "$s" -ge 60 ]; then printf '%dm' $((s/60)); else printf '%ds' "$s"; fi; }
 
+# print the flag; push it to the workspace sidebar only when it changed
+emit() {
+  printf '%s\n' "$1"
+  [ -n "$ws" ] || return 0
+  { [ -f "$reported" ] && [ "$(sed -n '2p' "$reported")" = "$1" ]; } && return 0
+  "$herdr" workspace report-metadata "$ws" --source ghr --token ghr="$1" --ttl-ms 120000 >/dev/null 2>&1 \
+    && printf '%s\n%s\n' "$ws" "$1" > "$reported"
+}
+
 # cached final state: no API call, expire 30 min after completion
 if [ -n "$final" ]; then
   set -- $final
-  [ $((now - $2)) -gt 1800 ] && { rm -f "$state"; exit 0; }
-  printf '%s %s\n' "$(icon "$1")" "$name"
+  [ $((now - $2)) -gt 1800 ] && { rm -f "$state"; clear_token; exit 0; }
+  emit "$(icon "$1") $name"
   exit 0
 fi
 
@@ -32,7 +53,7 @@ updated=$(printf '%s' "$json" | jq -r '.updatedAt | fromdateiso8601 | floor')
 
 if [ "$status" = "completed" ]; then
   printf '%s %s\n' "$concl" "$updated" >> "$state"
-  printf '%s %s %s\n' "$(icon "$concl")" "$name" "$(dur $((updated - created)))"
+  emit "$(icon "$concl") $name $(dur $((updated - created)))"
 else
-  printf '%s %s %s\n' "$(icon "$status")" "$name" "$(dur $((now - created)))"
+  emit "$(icon "$status") $name $(dur $((now - created)))"
 fi

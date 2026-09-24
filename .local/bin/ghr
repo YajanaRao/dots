@@ -42,8 +42,9 @@ if gh workflow run "$name" --ref "$branch"; then
   if [ -n "$run_id" ]; then
     state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/ghr"
     mkdir -p "$state_dir"
-    printf '%s\n%s\n%s\n' "$repo" "$run_id" "$name" > "$state_dir/run"
-    printf '  ● run #%s flagged in the tab bar\n' "$run_id"
+    printf '%s\n%s\n%s\n%s\n' "$repo" "$run_id" "$name" \
+      "${HERDR_ACTIVE_WORKSPACE_ID:-${HERDR_WORKSPACE_ID:-}}" > "$state_dir/run"
+    printf '  ● run #%s flagged in tab bar + sidebar\n' "$run_id"
   fi
   sleep 2
 else
