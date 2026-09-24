@@ -1,8 +1,5 @@
 #!/bin/sh
-# herdr-focus-attention — jump to the first agent that needs attention:
-# "blocked" (asking for input) first, then "done" (finished unseen work).
-# Bound to prefix+o as a herdr [[keys.command]] of type "shell".
-
+# focus first agent needing attention: blocked > done (herdr: prefix+o).
 set -u
 herdr="${HERDR_BIN_PATH:-herdr}"
 

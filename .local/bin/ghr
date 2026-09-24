@@ -1,10 +1,7 @@
 #!/bin/sh
-# ghr — trigger a GitHub workflow run: pick workflow, pick branch, fire.
-# Works in any terminal inside a repo; designed for Herdr popups.
-
+# ghr — pick a GitHub workflow + branch, trigger a run (herdr: prefix+alt+r).
 set -u
 
-# Herdr popups start in the focused pane's cwd; make it explicit.
 cd "${HERDR_ACTIVE_PANE_CWD:-$PWD}" || exit 1
 
 err() { printf '\n  %s\n\n  press enter to close' "$1"; read -r _; exit 1; }
@@ -13,13 +10,13 @@ command -v gh  >/dev/null 2>&1 || err "gh CLI not installed"
 command -v gum >/dev/null 2>&1 || err "gum not installed: brew install gum"
 git rev-parse --git-dir >/dev/null 2>&1 || err "not in a git repository"
 
-git fetch --quiet >/dev/null 2>&1 &  # refresh branches for next time
+git fetch --quiet >/dev/null 2>&1 &
 
 workflows=$(gh workflow list --all 2>&1) || err "failed to list workflows"
 
 name=$(printf '%s\n' "$workflows" | awk -F'\t' '$2 == "active" { print $1 }' \
   | gum filter --height 15 --placeholder 'workflow…') || exit 0
-[ -n "$name" ] || exit 0   # esc → close popup silently
+[ -n "$name" ] || exit 0
 
 branch=$(git branch -r | grep -v HEAD | sed -e 's/^ *//' -e 's|^origin/||' \
   | gum filter --height 15 --placeholder "branch for ${name}…") || exit 0

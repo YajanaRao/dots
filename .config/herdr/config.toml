@@ -60,11 +60,8 @@ previous_workspace = "prefix+shift+p"
 next_workspace = "prefix+shift+n"
 switch_workspace = "prefix+shift+1..9"
 new_workspace = "prefix+shift+c"
-# Default target opener is dead with toast delivery = "terminal"; prefix+o is
-# rebound to the focus-attention command below instead.
 open_notification_target = ""
 
-# Open lazygit as a session-modal popup from any workspace.
 [[keys.command]]
 key = "prefix+alt+g"
 type = "popup"
@@ -72,7 +69,6 @@ command = "lazygit"
 width = "100%"
 height = "100%"
 
-# Open a scratch shell as a session-modal popup; exit the shell to close it.
 [[keys.command]]
 key = "prefix+t"
 type = "popup"
@@ -81,7 +77,6 @@ description = "open scratch terminal"
 width = "80%"
 height = "80%"
 
-# Trigger a GitHub workflow run: gum pickers in a session-modal popup.
 [[keys.command]]
 key = "prefix+alt+r"
 type = "popup"
@@ -90,8 +85,6 @@ description = "trigger GitHub workflow"
 width = 64
 height = 22
 
-# Jump to the first agent needing attention (blocked > done). Works with any
-# toast delivery setting since it queries live state instead of notifications.
 [[keys.command]]
 key = "prefix+o"
 type = "shell"
