@@ -22,8 +22,29 @@ branch=$(git branch -r | grep -v HEAD | sed -e 's/^ *//' -e 's|^origin/||' \
   | gum filter --height 15 --placeholder "branch for ${name}…") || exit 0
 [ -n "$branch" ] || exit 0
 
+trigger_epoch=$(date +%s)
 if gh workflow run "$name" --ref "$branch"; then
   printf '\n  ✓ triggered "%s" on %s\n' "$name" "$branch"
+
+  # record the run so ghr-status can flag it in the herdr tab bar
+  repo=$(gh repo view --json nameWithOwner --jq .nameWithOwner 2>/dev/null)
+  run_id=""
+  i=0
+  while [ "$i" -lt 6 ] && [ -n "$repo" ]; do
+    sleep 2
+    run_id=$(gh run list --workflow "$name" --branch "$branch" --limit 1 \
+      --json databaseId,createdAt 2>/dev/null | jq -r --argjson t "$trigger_epoch" \
+      '.[0] as $r | (($r.createdAt // "" | fromdateiso8601?) // 0) as $c
+       | if $c >= $t then ($r.databaseId | tostring) else empty end' 2>/dev/null)
+    [ -n "$run_id" ] && break
+    i=$((i + 1))
+  done
+  if [ -n "$run_id" ]; then
+    state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/ghr"
+    mkdir -p "$state_dir"
+    printf '%s\n%s\n%s\n' "$repo" "$run_id" "$name" > "$state_dir/run"
+    printf '  ● run #%s flagged in the tab bar\n' "$run_id"
+  fi
   sleep 2
 else
   err "failed to trigger \"$name\""

@@ -1,0 +1,38 @@
+#!/bin/sh
+# ghr-status — one-line flag for the last ghr-triggered run (herdr tab bar).
+set -u
+
+state="${XDG_STATE_HOME:-$HOME/.local/state}/ghr/run"
+[ -f "$state" ] || exit 0
+
+repo=$(sed -n '1p' "$state")
+id=$(sed -n '2p' "$state")
+name=$(sed -n '3p' "$state")
+final=$(sed -n '4p' "$state")
+{ [ -n "$repo" ] && [ -n "$id" ]; } || { rm -f "$state"; exit 0; }
+
+now=$(date +%s)
+
+icon() { case "$1" in success) printf '✓';; failure) printf '✗';; cancelled) printf '⊘';; in_progress) printf '●';; *) printf '○';; esac; }
+dur() { s=$1; if [ "$s" -ge 3600 ]; then printf '%dh%02dm' $((s/3600)) $((s%3600/60)); elif [ "$s" -ge 60 ]; then printf '%dm' $((s/60)); else printf '%ds' "$s"; fi; }
+
+# cached final state: no API call, expire 30 min after completion
+if [ -n "$final" ]; then
+  set -- $final
+  [ $((now - $2)) -gt 1800 ] && { rm -f "$state"; exit 0; }
+  printf '%s %s\n' "$(icon "$1")" "$name"
+  exit 0
+fi
+
+json=$(gh run view "$id" --repo "$repo" --json status,conclusion,createdAt,updatedAt 2>/dev/null) || exit 1
+status=$(printf '%s' "$json"  | jq -r '.status')
+concl=$(printf '%s' "$json"  | jq -r '.conclusion // ""')
+created=$(printf '%s' "$json" | jq -r '.createdAt | fromdateiso8601 | floor')
+updated=$(printf '%s' "$json" | jq -r '.updatedAt | fromdateiso8601 | floor')
+
+if [ "$status" = "completed" ]; then
+  printf '%s %s\n' "$concl" "$updated" >> "$state"
+  printf '%s %s %s\n' "$(icon "$concl")" "$name" "$(dur $((updated - created)))"
+else
+  printf '%s %s %s\n' "$(icon "$status")" "$name" "$(dur $((now - created)))"
+fi

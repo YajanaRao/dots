@@ -50,6 +50,9 @@ peach = "#EC8B49"
 # Does not follow auto_switch; bright gold works on cream and forest floors.
 [ui]
 accent = "#FFC600"
+tab_bar_right = [
+  { type = "command", command = "$HOME/.local/bin/ghr-status", interval_seconds = 15, timeout_seconds = 10 },
+]
 
 [ui.toast]
 delivery = "terminal"
