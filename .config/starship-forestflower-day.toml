@@ -1,0 +1,75 @@
+# Forest Flower Powerline Preset for Starship
+# GENERATED from this template by scripts/generate.mjs — edit the template, not the output.
+
+format = """
+[](#705800)\
+$directory\
+[](fg:#705800 bg:#DFE5CB)\
+$git_branch\
+$git_status\
+[](fg:#DFE5CB bg:#24837B)\
+$jobs\
+[](fg:#24837B bg:#F4E7C6)\
+$bun\
+$nodejs\
+$python\
+$rust\
+$golang\
+[](fg:#F4E7C6)\
+"""
+
+[directory]
+style = "bg:#705800 fg:#F3F8EF"
+format = "[ $path ]($style)"
+truncation_length = 0
+truncate_to_repo = false
+
+[directory.substitutions]
+"Documents" = "󰈙 "
+"Downloads" = "󰇚 "
+"Music" = " "
+"Pictures" = " "
+"Code" = "󰨞 "
+"Developer" = "󰨞 "
+
+[git_branch]
+symbol = ""
+style = "bg:#DFE5CB fg:#705800"
+format = '[ $symbol $branch ]($style)'
+
+[git_status]
+style = "bg:#DFE5CB fg:#705800"
+format = '[$all_status$ahead_behind ]($style)'
+
+[jobs]
+symbol = "✦"
+style = "bg:#24837B fg:#F3F8EF"
+format = "[ $symbol $number ]($style)"
+number_threshold = 1
+
+[bun]
+symbol = ""
+style = "bg:#F4E7C6 fg:#705800"
+format = '[ $symbol ($version) ]($style)'
+detect_files = ['bun.lockb', 'bunfig.toml']
+
+[nodejs]
+symbol = "󰎙"
+style = "bg:#F4E7C6 fg:#705800"
+format = '[ $symbol ($version) ]($style)'
+detect_files = ['package.json', '.node-version', '.nvmrc']
+
+[python]
+symbol = " "
+style = "bg:#F4E7C6 fg:#705800"
+format = '[ $symbol ($version) ]($style)'
+
+[rust]
+symbol = ""
+style = "bg:#F4E7C6 fg:#705800"
+format = '[ $symbol ($version) ]($style)'
+
+[golang]
+symbol = " "
+style = "bg:#F4E7C6 fg:#705800"
+format = '[ $symbol ($version) ]($style)'

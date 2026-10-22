@@ -1,0 +1,14 @@
+#!/bin/sh
+# focus first agent needing attention: blocked > done (herdr: prefix+o).
+set -u
+herdr="${HERDR_BIN_PATH:-herdr}"
+
+target=$("$herdr" agent list | jq -r '
+  .result.agents
+  | (map(select(.agent_status == "blocked")) + map(select(.agent_status == "done")))
+  | .[0].pane_id // empty
+')
+
+if [ -n "$target" ]; then
+  "$herdr" agent focus "$target" >/dev/null
+fi

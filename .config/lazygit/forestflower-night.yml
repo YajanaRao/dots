@@ -1,0 +1,36 @@
+# Forest Flower (Night) — lazygit UI chrome theme
+# GENERATED from DESIGN.md by scripts/generate.mjs — do not edit by hand.
+#
+# Theme-only layer — compose with your base config, never replaces it:
+#   lazygit -ucf ~/.config/lazygit/config.yml,~/.config/lazygit/forestflower-night.yml
+#
+# Diffs are rendered by delta — install ../delta/forestflower.gitconfig too.
+
+gui:
+  theme:
+    activeBorderColor:
+      - "#FBC701"
+      - bold
+    inactiveBorderColor:
+      - "#8F9988"
+    searchingActiveBorderColor:
+      - "#FBC701"
+      - bold
+    optionsTextColor:
+      - "#66A0C8"
+    selectedLineBgColor:
+      - "#3D4526"
+    inactiveViewSelectedLineBgColor:
+      - "#181818"
+    cherryPickedCommitFgColor:
+      - "#FBC701"
+    cherryPickedCommitBgColor:
+      - "#3D4526"
+    markedBaseCommitFgColor:
+      - "#FBC701"
+    markedBaseCommitBgColor:
+      - "#4D4126"
+    unstagedChangesColor:
+      - "#FF9786"
+    defaultFgColor:
+      - "#D0DAC9"
