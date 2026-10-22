@@ -15,7 +15,7 @@ if defaults read -g AppleInterfaceStyle >/dev/null 2>&1; then
   FF_ACCENT=0xff{{ .forestflower.night.primary | trimPrefix "#" | lower }}
   FF_ON_ACCENT=0xff{{ .forestflower.night.canvas | trimPrefix "#" | lower }}
   FF_DANGER=0xff{{ .forestflower.night.error | trimPrefix "#" | lower }}
-  FF_ACTIVE_BG=0xff{{ .forestflower.night.ansi_green | trimPrefix "#" | lower }}
+  FF_ACTIVE_BG=0xff{{ .forestflower.night.primary | trimPrefix "#" | lower }}
   FF_ACTIVE_FG=0xff{{ .forestflower.night.canvas | trimPrefix "#" | lower }}
   FF_OCC_FG=0xff{{ .forestflower.night.ink | trimPrefix "#" | lower }}
   FF_SELECTION=0xff{{ .forestflower.night.selection | trimPrefix "#" | lower }}
@@ -31,7 +31,7 @@ else
   FF_ACCENT=0xff{{ .forestflower.day.primary | trimPrefix "#" | lower }}
   FF_ON_ACCENT=0xff{{ .forestflower.day.canvas | trimPrefix "#" | lower }}
   FF_DANGER=0xff{{ .forestflower.day.error | trimPrefix "#" | lower }}
-  FF_ACTIVE_BG=0xff{{ .forestflower.day.syntax_keyword | trimPrefix "#" | lower }}
+  FF_ACTIVE_BG=0xff{{ .forestflower.day.primary | trimPrefix "#" | lower }}
   FF_ACTIVE_FG=0xff{{ .forestflower.day.canvas | trimPrefix "#" | lower }}
   FF_OCC_FG=0xff{{ .forestflower.day.ink | trimPrefix "#" | lower }}
   FF_SELECTION=0xff{{ .forestflower.day.selection | trimPrefix "#" | lower }}
