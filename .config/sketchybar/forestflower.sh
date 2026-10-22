@@ -15,7 +15,7 @@ if defaults read -g AppleInterfaceStyle >/dev/null 2>&1; then
   FF_ACCENT=0xfffbc701
   FF_ON_ACCENT=0xff000000
   FF_DANGER=0xffff9786
-  FF_ACTIVE_BG=0xff879a39
+  FF_ACTIVE_BG=0xfffbc701
   FF_ACTIVE_FG=0xff000000
   FF_OCC_FG=0xffd0dac9
   FF_SELECTION=0xff1d2112
@@ -31,7 +31,7 @@ else
   FF_ACCENT=0xff705800
   FF_ON_ACCENT=0xfff3f8ef
   FF_DANGER=0xff942921
-  FF_ACTIVE_BG=0xff66800b
+  FF_ACTIVE_BG=0xff705800
   FF_ACTIVE_FG=0xfff3f8ef
   FF_OCC_FG=0xff363e30
   FF_SELECTION=0xffccd6b9
