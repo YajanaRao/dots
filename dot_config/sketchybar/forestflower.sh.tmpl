@@ -1,0 +1,38 @@
+# Forest Flower palette for SketchyBar.
+# Source this file. It reads macOS appearance and sets FF_* to 0xAARRGGBB.
+#
+# Night is AppleInterfaceStyle=Dark. Day is the key being absent.
+
+if defaults read -g AppleInterfaceStyle >/dev/null 2>&1; then
+  FF_MODE=night
+  FF_BAR=0xff{{ .forestflower.night.canvas | trimPrefix "#" | lower }}
+  FF_FG=0xff{{ .forestflower.night.ink | trimPrefix "#" | lower }}
+  FF_CHEVRON=0xff{{ .forestflower.night.ansi_bright_black | trimPrefix "#" | lower }}
+  FF_CLOCK=0xff{{ .forestflower.night.ansi_cyan | trimPrefix "#" | lower }}
+  FF_VOLUME=0xff{{ .forestflower.night.ansi_blue | trimPrefix "#" | lower }}
+  FF_BATTERY=0xff{{ .forestflower.night.ansi_yellow | trimPrefix "#" | lower }}
+  FF_MEDIA=0xff{{ .forestflower.night.media | trimPrefix "#" | lower }}
+  FF_ACCENT=0xff{{ .forestflower.night.primary | trimPrefix "#" | lower }}
+  FF_ON_ACCENT=0xff{{ .forestflower.night.canvas | trimPrefix "#" | lower }}
+  FF_DANGER=0xff{{ .forestflower.night.error | trimPrefix "#" | lower }}
+  FF_ACTIVE_BG=0xff{{ .forestflower.night.ansi_green | trimPrefix "#" | lower }}
+  FF_ACTIVE_FG=0xff{{ .forestflower.night.canvas | trimPrefix "#" | lower }}
+  FF_OCC_FG=0xff{{ .forestflower.night.ink | trimPrefix "#" | lower }}
+  FF_SELECTION=0xff{{ .forestflower.night.selection | trimPrefix "#" | lower }}
+else
+  FF_MODE=day
+  FF_BAR=0xff{{ .forestflower.day.canvas | trimPrefix "#" | lower }}
+  FF_FG=0xff{{ .forestflower.day.ink | trimPrefix "#" | lower }}
+  FF_CHEVRON=0xff{{ .forestflower.day.ansi_bright_black | trimPrefix "#" | lower }}
+  FF_CLOCK=0xff{{ .forestflower.day.syntax_string | trimPrefix "#" | lower }}
+  FF_VOLUME=0xff{{ .forestflower.day.syntax_type | trimPrefix "#" | lower }}
+  FF_BATTERY=0xff{{ .forestflower.day.ansi_yellow | trimPrefix "#" | lower }}
+  FF_MEDIA=0xff{{ .forestflower.day.media | trimPrefix "#" | lower }}
+  FF_ACCENT=0xff{{ .forestflower.day.primary | trimPrefix "#" | lower }}
+  FF_ON_ACCENT=0xff{{ .forestflower.day.canvas | trimPrefix "#" | lower }}
+  FF_DANGER=0xff{{ .forestflower.day.error | trimPrefix "#" | lower }}
+  FF_ACTIVE_BG=0xff{{ .forestflower.day.syntax_keyword | trimPrefix "#" | lower }}
+  FF_ACTIVE_FG=0xff{{ .forestflower.day.canvas | trimPrefix "#" | lower }}
+  FF_OCC_FG=0xff{{ .forestflower.day.ink | trimPrefix "#" | lower }}
+  FF_SELECTION=0xff{{ .forestflower.day.selection | trimPrefix "#" | lower }}
+fi

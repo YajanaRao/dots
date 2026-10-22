@@ -1,0 +1,110 @@
+onboarding = false
+
+[theme]
+name = "terminal"
+auto_switch = true
+
+[theme.custom.light]
+accent = "{{ .forestflower.day.primary }}"
+panel_bg = "{{ .forestflower.day.canvas }}"
+sidebar_bg = "{{ .forestflower.day.surface }}"
+active_row_bg = "{{ .forestflower.day.secondary_container }}"
+selection_bg = "{{ .forestflower.day.selection }}"
+surface0 = "{{ .forestflower.day.surface_deep }}"
+surface1 = "{{ .forestflower.day.surface1 }}"
+surface_dim = "{{ .forestflower.day.surface }}"
+overlay0 = "{{ .forestflower.day.muted }}"
+overlay1 = "{{ .forestflower.day.subtle }}"
+text = "{{ .forestflower.day.ink }}"
+subtext0 = "{{ .forestflower.day.ink_secondary }}"
+mauve = "{{ .forestflower.day.syntax_regex }}"
+green = "{{ .forestflower.day.success }}"
+yellow = "{{ .forestflower.day.ansi_yellow }}"
+red = "{{ .forestflower.day.error }}"
+blue = "{{ .forestflower.day.info }}"
+teal = "{{ .forestflower.day.ansi_cyan }}"
+peach = "{{ .forestflower.day.syntax_function }}"
+
+[theme.custom.dark]
+accent = "{{ .forestflower.night.primary }}"
+panel_bg = "{{ .forestflower.night.canvas }}"
+sidebar_bg = "{{ .forestflower.night.surface }}"
+active_row_bg = "{{ .forestflower.night.surface_raised }}"
+selection_bg = "{{ .forestflower.night.selection }}"
+surface0 = "{{ .forestflower.night.surface_deep }}"
+surface1 = "{{ .forestflower.night.surface1 }}"
+surface_dim = "{{ .forestflower.night.canvas }}"
+overlay0 = "{{ .forestflower.night.muted }}"
+overlay1 = "{{ .forestflower.night.ink_secondary }}"
+text = "{{ .forestflower.night.ink }}"
+subtext0 = "{{ .forestflower.night.ink_secondary }}"
+mauve = "{{ .forestflower.night.syntax_regex }}"
+green = "{{ .forestflower.night.success }}"
+yellow = "{{ .forestflower.night.ansi_bright_yellow }}"
+red = "{{ .forestflower.night.error }}"
+blue = "{{ .forestflower.night.info }}"
+teal = "{{ .forestflower.night.syntax_string }}"
+peach = "{{ .forestflower.night.syntax_function }}"
+
+# Highlights, borders, navigate chrome — separate from theme.custom.accent.
+# Does not follow auto_switch; bright gold works on the Leaf page and the black floor.
+[ui]
+accent = "{{ .forestflower.night.primary }}"
+tab_bar_right = [
+  { type = "command", command = "$HOME/.local/bin/ghr-status", interval_seconds = 15, timeout_seconds = 10 },
+]
+
+[ui.sidebar.spaces]
+rows = [
+  ["state_icon", "workspace"],
+  ["branch", "git_status"],
+  [{ token = "$ghr", rules = [
+    { starts_with = "✓", fg = "#568200" },
+    { starts_with = "✗", fg = "#C43B2E" },
+    { starts_with = "⊘", dim = true },
+    { starts_with = "○", dim = true },
+  ] }],
+]
+
+[ui.sidebar.agents]
+rows = [["state_icon", "machine", "workspace", "tab"], ["agent"]]
+
+[ui.toast]
+delivery = "system"
+delay_seconds = 1
+
+[keys]
+previous_workspace = "prefix+shift+p"
+next_workspace = "prefix+shift+n"
+switch_workspace = "prefix+shift+1..9"
+new_workspace = "prefix+shift+c"
+open_notification_target = ""
+
+[[keys.command]]
+key = "prefix+alt+g"
+type = "popup"
+command = "lazygit"
+width = "100%"
+height = "100%"
+
+[[keys.command]]
+key = "prefix+t"
+type = "popup"
+command = "exec \"${SHELL:-sh}\""
+description = "open scratch terminal"
+width = "80%"
+height = "80%"
+
+[[keys.command]]
+key = "prefix+alt+r"
+type = "popup"
+command = "$HOME/.local/bin/ghr"
+description = "trigger GitHub workflow"
+width = 64
+height = 22
+
+[[keys.command]]
+key = "prefix+o"
+type = "shell"
+command = "$HOME/.local/bin/herdr-focus-attention"
+description = "focus agent needing attention"

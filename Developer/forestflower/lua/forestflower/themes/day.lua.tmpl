@@ -1,0 +1,65 @@
+-- Forest Flower — Day
+-- Hand-maintained. DESIGN.md is the source of truth for every value here;
+-- when a token changes there, update this file (and extras/) to match.
+-- Surfaces run edge-outward: canvas is the substrate edge (brightest in light
+-- mode), and every other surface steps down out of it. See DESIGN.md § Elevation.
+
+return {
+  name = "day",
+  background = "light",
+
+  canvas = "{{ .forestflower.day.canvas }}",
+  surface = "{{ .forestflower.day.surface }}",
+  surface_deep = "{{ .forestflower.day.surface_deep }}",
+  surface_raised = "{{ .forestflower.day.surface_raised }}",
+  ink = "{{ .forestflower.day.ink }}",
+  muted = "{{ .forestflower.day.muted }}",
+  subtle = "{{ .forestflower.day.subtle }}",
+  primary = "{{ .forestflower.day.primary }}",
+  primary_container = "{{ .forestflower.day.primary_container }}",
+  secondary = "{{ .forestflower.day.secondary }}",
+  secondary_container = "{{ .forestflower.day.secondary_container }}",
+  syntax_keyword = "{{ .forestflower.day.syntax_keyword }}",
+  syntax_operator = "{{ .forestflower.day.syntax_operator }}",
+  syntax_function = "{{ .forestflower.day.syntax_function }}",
+  syntax_string = "{{ .forestflower.day.syntax_string }}",
+  syntax_type = "{{ .forestflower.day.syntax_type }}",
+  syntax_tag = "{{ .forestflower.day.syntax_tag }}",
+  syntax_regex = "{{ .forestflower.day.syntax_regex }}",
+  syntax_number = "{{ .forestflower.day.syntax_number }}",
+  syntax_variable = "{{ .forestflower.day.syntax_variable }}",
+  syntax_punctuation = "{{ .forestflower.day.syntax_punctuation }}",
+  syntax_comment = "{{ .forestflower.day.syntax_comment }}",
+  error = "{{ .forestflower.day.error }}",
+  warning = "{{ .forestflower.day.warning }}",
+  success = "{{ .forestflower.day.success }}",
+  info = "{{ .forestflower.day.info }}",
+  hint = "{{ .forestflower.day.hint }}",
+  git_add = "{{ .forestflower.day.git_add }}",
+  git_change = "{{ .forestflower.day.git_change }}",
+  git_delete = "{{ .forestflower.day.git_delete }}",
+  git_untracked = "{{ .forestflower.day.git_untracked }}",
+  git_ignored = "{{ .forestflower.day.git_ignored }}",
+  git_conflict = "{{ .forestflower.day.git_conflict }}",
+
+  ansi = {
+    black = "{{ .forestflower.day.ansi_black }}",
+    red = "{{ .forestflower.day.ansi_red }}",
+    green = "{{ .forestflower.day.ansi_green }}",
+    yellow = "{{ .forestflower.day.ansi_yellow }}",
+    blue = "{{ .forestflower.day.ansi_blue }}",
+    magenta = "{{ .forestflower.day.ansi_magenta }}",
+    cyan = "{{ .forestflower.day.ansi_cyan }}",
+    white = "{{ .forestflower.day.ansi_white }}",
+    bright_black = "{{ .forestflower.day.ansi_bright_black }}",
+    bright_red = "{{ .forestflower.day.ansi_bright_red }}",
+    bright_green = "{{ .forestflower.day.ansi_bright_green }}",
+    bright_yellow = "{{ .forestflower.day.ansi_bright_yellow }}",
+    bright_blue = "{{ .forestflower.day.ansi_bright_blue }}",
+    bright_magenta = "{{ .forestflower.day.ansi_bright_magenta }}",
+    bright_cyan = "{{ .forestflower.day.ansi_bright_cyan }}",
+    bright_white = "{{ .forestflower.day.ansi_bright_white }}",
+  },
+
+  none = "NONE",
+}

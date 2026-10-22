@@ -1,0 +1,259 @@
+{
+  "$schema": "https://opencode.ai/theme.json",
+  "defs": {
+    "canvas": "{{ .forestflower.day.canvas }}",
+    "surface": "{{ .forestflower.day.surface }}",
+    "surface_deep": "{{ .forestflower.day.surface_deep }}",
+    "surface_raised": "{{ .forestflower.day.surface_raised }}",
+    "selection": "{{ .forestflower.day.selection }}",
+    "ink": "{{ .forestflower.day.ink }}",
+    "ink_secondary": "{{ .forestflower.day.ink_secondary }}",
+    "muted": "{{ .forestflower.day.muted }}",
+    "subtle": "{{ .forestflower.day.subtle }}",
+    "primary": "{{ .forestflower.day.primary }}",
+    "primary_container": "{{ .forestflower.day.primary_container }}",
+    "syntax_keyword": "{{ .forestflower.day.syntax_keyword }}",
+    "syntax_operator": "{{ .forestflower.day.syntax_operator }}",
+    "syntax_function": "{{ .forestflower.day.syntax_function }}",
+    "syntax_string": "{{ .forestflower.day.syntax_string }}",
+    "syntax_type": "{{ .forestflower.day.syntax_type }}",
+    "syntax_tag": "{{ .forestflower.day.syntax_tag }}",
+    "syntax_regex": "{{ .forestflower.day.syntax_regex }}",
+    "syntax_number": "{{ .forestflower.day.syntax_number }}",
+    "syntax_variable": "{{ .forestflower.day.syntax_variable }}",
+    "syntax_punctuation": "{{ .forestflower.day.syntax_punctuation }}",
+    "syntax_comment": "{{ .forestflower.day.syntax_comment }}",
+    "error": "{{ .forestflower.day.error }}",
+    "warning": "{{ .forestflower.day.warning }}",
+    "success": "{{ .forestflower.day.success }}",
+    "info": "{{ .forestflower.day.info }}",
+    "hint": "{{ .forestflower.day.hint }}",
+    "git_add": "{{ .forestflower.day.git_add }}",
+    "git_change": "{{ .forestflower.day.git_change }}",
+    "git_delete": "{{ .forestflower.day.git_delete }}",
+    "git_untracked": "{{ .forestflower.day.git_untracked }}",
+    "git_ignored": "{{ .forestflower.day.git_ignored }}",
+    "git_conflict": "{{ .forestflower.day.git_conflict }}",
+    "diff_add_bg": "{{ .forestflower.day.diff_add_bg }}",
+    "diff_change_bg": "{{ .forestflower.day.diff_change_bg }}",
+    "diff_delete_bg": "{{ .forestflower.day.diff_delete_bg }}",
+    "ansi_black": "{{ .forestflower.day.ansi_black }}",
+    "ansi_red": "{{ .forestflower.day.ansi_red }}",
+    "ansi_green": "{{ .forestflower.day.ansi_green }}",
+    "ansi_yellow": "{{ .forestflower.day.ansi_yellow }}",
+    "ansi_blue": "{{ .forestflower.day.ansi_blue }}",
+    "ansi_magenta": "{{ .forestflower.day.ansi_magenta }}",
+    "ansi_cyan": "{{ .forestflower.day.ansi_cyan }}",
+    "ansi_white": "{{ .forestflower.day.ansi_white }}",
+    "ansi_bright_black": "{{ .forestflower.day.ansi_bright_black }}",
+    "ansi_bright_red": "{{ .forestflower.day.ansi_bright_red }}",
+    "ansi_bright_green": "{{ .forestflower.day.ansi_bright_green }}",
+    "ansi_bright_yellow": "{{ .forestflower.day.ansi_bright_yellow }}",
+    "ansi_bright_blue": "{{ .forestflower.day.ansi_bright_blue }}",
+    "ansi_bright_magenta": "{{ .forestflower.day.ansi_bright_magenta }}",
+    "ansi_bright_cyan": "{{ .forestflower.day.ansi_bright_cyan }}",
+    "ansi_bright_white": "{{ .forestflower.day.ansi_bright_white }}"
+  },
+  "theme": {
+    "primary": {
+      "dark": "primary",
+      "light": "primary"
+    },
+    "secondary": {
+      "dark": "success",
+      "light": "success"
+    },
+    "accent": {
+      "dark": "primary",
+      "light": "primary"
+    },
+    "error": {
+      "dark": "error",
+      "light": "error"
+    },
+    "warning": {
+      "dark": "warning",
+      "light": "warning"
+    },
+    "success": {
+      "dark": "success",
+      "light": "success"
+    },
+    "info": {
+      "dark": "info",
+      "light": "info"
+    },
+    "text": {
+      "dark": "ink",
+      "light": "ink"
+    },
+    "textMuted": {
+      "dark": "ink_secondary",
+      "light": "ink_secondary"
+    },
+    "background": {
+      "dark": "canvas",
+      "light": "canvas"
+    },
+    "backgroundPanel": {
+      "dark": "surface",
+      "light": "surface"
+    },
+    "backgroundElement": {
+      "dark": "surface_raised",
+      "light": "surface_raised"
+    },
+    "border": {
+      "dark": "surface_raised",
+      "light": "surface_raised"
+    },
+    "borderActive": {
+      "dark": "primary",
+      "light": "primary"
+    },
+    "borderSubtle": {
+      "dark": "muted",
+      "light": "muted"
+    },
+    "diffAdded": {
+      "dark": "git_add",
+      "light": "git_add"
+    },
+    "diffRemoved": {
+      "dark": "git_delete",
+      "light": "git_delete"
+    },
+    "diffContext": {
+      "dark": "subtle",
+      "light": "subtle"
+    },
+    "diffHunkHeader": {
+      "dark": "muted",
+      "light": "muted"
+    },
+    "diffHighlightAdded": {
+      "dark": "git_add",
+      "light": "git_add"
+    },
+    "diffHighlightRemoved": {
+      "dark": "git_delete",
+      "light": "git_delete"
+    },
+    "diffAddedBg": {
+      "dark": "diff_add_bg",
+      "light": "diff_add_bg"
+    },
+    "diffRemovedBg": {
+      "dark": "diff_delete_bg",
+      "light": "diff_delete_bg"
+    },
+    "diffContextBg": {
+      "dark": "surface_raised",
+      "light": "surface_raised"
+    },
+    "diffLineNumber": {
+      "dark": "muted",
+      "light": "muted"
+    },
+    "diffAddedLineNumberBg": {
+      "dark": "diff_add_bg",
+      "light": "diff_add_bg"
+    },
+    "diffRemovedLineNumberBg": {
+      "dark": "diff_delete_bg",
+      "light": "diff_delete_bg"
+    },
+    "markdownText": {
+      "dark": "ink",
+      "light": "ink"
+    },
+    "markdownHeading": {
+      "dark": "syntax_keyword",
+      "light": "syntax_keyword"
+    },
+    "markdownLink": {
+      "dark": "syntax_type",
+      "light": "syntax_type"
+    },
+    "markdownLinkText": {
+      "dark": "syntax_string",
+      "light": "syntax_string"
+    },
+    "markdownCode": {
+      "dark": "syntax_variable",
+      "light": "syntax_variable"
+    },
+    "markdownBlockQuote": {
+      "dark": "syntax_comment",
+      "light": "syntax_comment"
+    },
+    "markdownEmph": {
+      "dark": "ink",
+      "light": "ink"
+    },
+    "markdownStrong": {
+      "dark": "ink",
+      "light": "ink"
+    },
+    "markdownHorizontalRule": {
+      "dark": "muted",
+      "light": "muted"
+    },
+    "markdownListItem": {
+      "dark": "syntax_type",
+      "light": "syntax_type"
+    },
+    "markdownListEnumeration": {
+      "dark": "syntax_function",
+      "light": "syntax_function"
+    },
+    "markdownImage": {
+      "dark": "syntax_type",
+      "light": "syntax_type"
+    },
+    "markdownImageText": {
+      "dark": "syntax_string",
+      "light": "syntax_string"
+    },
+    "markdownCodeBlock": {
+      "dark": "ink",
+      "light": "ink"
+    },
+    "syntaxComment": {
+      "dark": "syntax_comment",
+      "light": "syntax_comment"
+    },
+    "syntaxKeyword": {
+      "dark": "syntax_keyword",
+      "light": "syntax_keyword"
+    },
+    "syntaxFunction": {
+      "dark": "syntax_function",
+      "light": "syntax_function"
+    },
+    "syntaxVariable": {
+      "dark": "syntax_variable",
+      "light": "syntax_variable"
+    },
+    "syntaxString": {
+      "dark": "syntax_string",
+      "light": "syntax_string"
+    },
+    "syntaxNumber": {
+      "dark": "syntax_number",
+      "light": "syntax_number"
+    },
+    "syntaxType": {
+      "dark": "syntax_type",
+      "light": "syntax_type"
+    },
+    "syntaxOperator": {
+      "dark": "syntax_operator",
+      "light": "syntax_operator"
+    },
+    "syntaxPunctuation": {
+      "dark": "syntax_punctuation",
+      "light": "syntax_punctuation"
+    }
+  }
+}

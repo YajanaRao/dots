@@ -1,0 +1,34 @@
+# Forest Flower DAY for television (tv)
+#
+# Hex variant with true DESIGN.md tokens — fixes the ANSI theme's one
+# compromise (gray selection bar). The cursor row is flaneur's recipe:
+# surface.raised row + accent.action text ("the current one among many").
+#
+# ~/.config/television/themes/forestflower.toml is a symlink that the
+# appearance watcher (extras/sketchybar/theme.sh) re-points between this
+# file and forestflower-night.toml when macOS flips light/dark.
+
+# general
+background = "{{ .forestflower.day.surface_deep }}"       # surface0 — panel tint so popups stand off the terminal
+border_fg = "{{ .forestflower.day.ansi_bright_black }}"        # visible 1px border tier (same as sketchybar popup borders)
+text_fg = "{{ .forestflower.day.ink }}"          # ink.primary
+dimmed_text_fg = "{{ .forestflower.day.subtle }}"   # ink.comment — captions / meta
+# input
+input_text_fg = "{{ .forestflower.day.ink }}"    # typed query = body ink
+result_count_fg = "{{ .forestflower.day.muted }}"  # ink.faint
+# results
+result_name_fg = "{{ .forestflower.day.ink }}"   # rows = ink.primary, no accent hue
+result_line_number_fg = "{{ .forestflower.day.muted }}"
+result_value_fg = "{{ .forestflower.day.syntax_string }}"  # cyan values
+selection_bg = "{{ .forestflower.day.surface_raised }}"     # surface.raised — the cursor row (was gray!)
+selection_fg = "{{ .forestflower.day.primary }}"     # accent.action — state.active gold
+match_fg = "{{ .forestflower.day.primary }}"         # matches = action gold
+# preview
+preview_title_fg = "{{ .forestflower.day.syntax_type }}"
+# mode pills — accent fill + on-action ink
+channel_mode_fg = "{{ .forestflower.day.canvas }}"
+channel_mode_bg = "{{ .forestflower.day.primary }}"
+remote_control_mode_fg = "{{ .forestflower.day.canvas }}"
+remote_control_mode_bg = "{{ .forestflower.day.syntax_type }}"
+action_picker_mode_fg = "{{ .forestflower.day.canvas }}"
+action_picker_mode_bg = "{{ .forestflower.day.syntax_string }}"

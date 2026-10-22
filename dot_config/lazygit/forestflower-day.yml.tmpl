@@ -1,0 +1,36 @@
+# Forest Flower (Day) — lazygit UI chrome theme
+# GENERATED from DESIGN.md by scripts/generate.mjs — do not edit by hand.
+#
+# Theme-only layer — compose with your base config, never replaces it:
+#   lazygit -ucf ~/.config/lazygit/config.yml,~/.config/lazygit/forestflower-day.yml
+#
+# Diffs are rendered by delta — install ../delta/forestflower.gitconfig too.
+
+gui:
+  theme:
+    activeBorderColor:
+      - "{{ .forestflower.day.primary }}"
+      - bold
+    inactiveBorderColor:
+      - "{{ .forestflower.day.subtle }}"
+    searchingActiveBorderColor:
+      - "{{ .forestflower.day.primary }}"
+      - bold
+    optionsTextColor:
+      - "{{ .forestflower.day.syntax_type }}"
+    selectedLineBgColor:
+      - "{{ .forestflower.day.secondary_container }}"
+    inactiveViewSelectedLineBgColor:
+      - "{{ .forestflower.day.surface_raised }}"
+    cherryPickedCommitFgColor:
+      - "{{ .forestflower.day.primary }}"
+    cherryPickedCommitBgColor:
+      - "{{ .forestflower.day.secondary_container }}"
+    markedBaseCommitFgColor:
+      - "{{ .forestflower.day.primary }}"
+    markedBaseCommitBgColor:
+      - "{{ .forestflower.day.primary_container }}"
+    unstagedChangesColor:
+      - "{{ .forestflower.day.error }}"
+    defaultFgColor:
+      - "{{ .forestflower.day.ink }}"

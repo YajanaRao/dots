@@ -1,0 +1,53 @@
+# Forest Flower — delta diff theme (day + night variants)
+# GENERATED from DESIGN.md by scripts/generate.mjs — do not edit by hand.
+#
+# Add to ~/.gitconfig:  [include] path = ~/.config/delta/forestflower.gitconfig
+# then select a feature:  [delta] features = forestflower-night   # or -day
+
+[delta "forestflower-day"]
+	light = true
+	line-numbers = true
+	syntax-theme = OneHalfLight
+	minus-style = syntax "{{ .forestflower.day.diff_delete_bg }}"
+	minus-emph-style = syntax "{{ .forestflower.day.diff_delete_emph }}"
+	minus-non-emph-style = syntax "{{ .forestflower.day.diff_delete_nonemph }}"
+	plus-style = syntax "{{ .forestflower.day.diff_add_bg }}"
+	plus-emph-style = syntax "{{ .forestflower.day.diff_add_emph }}"
+	plus-non-emph-style = syntax "{{ .forestflower.day.diff_add_nonemph }}"
+	zero-style = syntax
+	hunk-header-style = "{{ .forestflower.day.primary }}" bold
+	hunk-header-decoration-style = "{{ .forestflower.day.muted }}" box
+	hunk-header-file-style = "{{ .forestflower.day.syntax_type }}"
+	hunk-header-line-number-style = "{{ .forestflower.day.subtle }}"
+	file-style = "{{ .forestflower.day.syntax_type }}" bold
+	file-decoration-style = "{{ .forestflower.day.muted }}" ul
+	line-numbers-minus-style = "{{ .forestflower.day.error }}"
+	line-numbers-plus-style = "{{ .forestflower.day.secondary }}"
+	line-numbers-zero-style = "{{ .forestflower.day.muted }}"
+	line-numbers-left-style = "{{ .forestflower.day.muted }}"
+	line-numbers-right-style = "{{ .forestflower.day.muted }}"
+	blame-palette = "{{ .forestflower.day.surface }}" "{{ .forestflower.day.canvas }}" "{{ .forestflower.day.surface_raised }}"
+
+[delta "forestflower-night"]
+	dark = true
+	line-numbers = true
+	syntax-theme = Dracula
+	minus-style = syntax "{{ .forestflower.night.diff_delete_bg }}"
+	minus-emph-style = syntax "{{ .forestflower.night.diff_delete_emph }}"
+	minus-non-emph-style = syntax "{{ .forestflower.night.diff_delete_nonemph }}"
+	plus-style = syntax "{{ .forestflower.night.diff_add_bg }}"
+	plus-emph-style = syntax "{{ .forestflower.night.diff_add_emph }}"
+	plus-non-emph-style = syntax "{{ .forestflower.night.diff_add_nonemph }}"
+	zero-style = syntax
+	hunk-header-style = "{{ .forestflower.night.primary }}" bold
+	hunk-header-decoration-style = "{{ .forestflower.night.muted }}" box
+	hunk-header-file-style = "{{ .forestflower.night.syntax_type }}"
+	hunk-header-line-number-style = "{{ .forestflower.night.subtle }}"
+	file-style = "{{ .forestflower.night.syntax_type }}" bold
+	file-decoration-style = "{{ .forestflower.night.muted }}" ul
+	line-numbers-minus-style = "{{ .forestflower.night.error }}"
+	line-numbers-plus-style = "{{ .forestflower.night.secondary }}"
+	line-numbers-zero-style = "{{ .forestflower.night.muted }}"
+	line-numbers-left-style = "{{ .forestflower.night.muted }}"
+	line-numbers-right-style = "{{ .forestflower.night.muted }}"
+	blame-palette = "{{ .forestflower.night.surface }}" "{{ .forestflower.night.canvas }}" "{{ .forestflower.night.surface_raised }}"
