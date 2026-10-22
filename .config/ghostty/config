@@ -45,3 +45,6 @@ shell-integration-features = cursor,title
 # omp
 keybind = alt+backspace=text:\x1b\x7f
 keybind = shift+enter=text:\n
+# disable Ghostty's default cmd+enter = toggle_fullscreen
+keybind = cmd+enter=unbind
+macos-titlebar-style = hidden

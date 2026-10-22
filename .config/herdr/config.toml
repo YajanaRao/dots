@@ -5,60 +5,72 @@ name = "terminal"
 auto_switch = true
 
 [theme.custom.light]
-accent = "#6F5800"
-panel_bg = "#FDF6E3"
-sidebar_bg = "#F4F0D9"
-active_row_bg = "#E1E0C1"
-selection_bg = "#D3D5B0"
-surface0 = "#EFEBD4"
-surface1 = "#DEDAC2"
-surface_dim = "#F4F0D9"
-overlay0 = "#9A9588"
-overlay1 = "#706B5E"
-text = "#3F3A32"
-subtext0 = "#5C574C"
-mauve = "#8B5E3C"
-green = "#4D6B0E"
+accent = "#705800"
+panel_bg = "#F3F8EF"
+sidebar_bg = "#ECF1E8"
+active_row_bg = "#DFE5CB"
+selection_bg = "#CCD6B9"
+surface0 = "#E7ECE3"
+surface1 = "#D6DBD2"
+surface_dim = "#ECF1E8"
+overlay0 = "#A5AE9D"
+overlay1 = "#606859"
+text = "#363E30"
+subtext0 = "#515A4B"
+mauve = "#5E409D"
+green = "#506A0C"
 yellow = "#AD8301"
-red = "#942822"
-blue = "#1A4F8C"
-teal = "#3D5A1F"
-peach = "#A84B1C"
+red = "#942921"
+blue = "#005581"
+teal = "#24837B"
+peach = "#BC5215"
 
 [theme.custom.dark]
-accent = "#FFC600"
-panel_bg = "#13181D"
-sidebar_bg = "#191E24"
-active_row_bg = "#23292F"
-selection_bg = "#2E342D"
-surface0 = "#1D2329"
-surface1 = "#2B3239"
-surface_dim = "#13181D"
-overlay0 = "#7A8478"
-overlay1 = "#B0A898"
-text = "#D3C6AA"
-subtext0 = "#B0A898"
-mauve = "#C4A07A"
-green = "#BEC97E"
+accent = "#FBC701"
+panel_bg = "#000000"
+sidebar_bg = "#0B0B0B"
+active_row_bg = "#181818"
+selection_bg = "#1D2112"
+surface0 = "#121212"
+surface1 = "#202020"
+surface_dim = "#000000"
+overlay0 = "#717A6A"
+overlay1 = "#AAB4A3"
+text = "#D0DAC9"
+subtext0 = "#AAB4A3"
+mauve = "#A699D0"
+green = "#B3CD6E"
 yellow = "#ECCB60"
-red = "#F89A8A"
-blue = "#92BFDB"
-teal = "#8FA85A"
+red = "#FF9786"
+blue = "#75BFFF"
+teal = "#5ABDAC"
 peach = "#EC8B49"
 
 # Highlights, borders, navigate chrome — separate from theme.custom.accent.
-# Does not follow auto_switch; bright gold works on cream and forest floors.
+# Does not follow auto_switch; bright gold works on the Leaf page and the black floor.
 [ui]
-accent = "#FFC600"
+accent = "#FBC701"
 tab_bar_right = [
   { type = "command", command = "$HOME/.local/bin/ghr-status", interval_seconds = 15, timeout_seconds = 10 },
 ]
 
 [ui.sidebar.spaces]
-rows = [["state_icon", "workspace"], ["branch", "git_status"], ["$ghr"]]
+rows = [
+  ["state_icon", "workspace"],
+  ["branch", "git_status"],
+  [{ token = "$ghr", rules = [
+    { starts_with = "✓", fg = "#568200" },
+    { starts_with = "✗", fg = "#C43B2E" },
+    { starts_with = "⊘", dim = true },
+    { starts_with = "○", dim = true },
+  ] }],
+]
+
+[ui.sidebar.agents]
+rows = [["state_icon", "machine", "workspace", "tab"], ["agent"]]
 
 [ui.toast]
-delivery = "terminal"
+delivery = "system"
 delay_seconds = 1
 
 [keys]

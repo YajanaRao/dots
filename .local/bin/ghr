@@ -4,27 +4,150 @@ set -u
 
 cd "${HERDR_ACTIVE_PANE_CWD:-$PWD}" || exit 1
 
-err() { printf '\n  %s\n\n  press enter to close' "$1"; read -r _; exit 1; }
+# OSC 7501 program status (mitchellh.com/writing/program-status-osc7501):
+# status-aware terminals (libghostty) show what we're doing; others ignore it.
+status() {
+  printf '\033]7501;state=%s:app=ghr:msg=%s\033\\' \
+    "$1" "$(printf '%s' "$2" | base64 | tr -d '\n')"
+}
+
+err() {
+  status error "$1"
+  printf '\n  %s\n\n  press enter to close' "$1"
+  { read -r _ </dev/tty || sleep 5; } 2>/dev/null
+  exit 1
+}
+
+# --- popup canvas: tinted panel + rounded frame ------------------------------
+# Herdr draws a popup border but its colour is not configurable, and the popup
+# shares the terminal's background — so paint our own. Surface/border hexes
+# match the tv picker theme and the sketchybar popups (forestflower).
+if defaults read -g AppleInterfaceStyle >/dev/null 2>&1; then
+  CANVAS='48;2;18;18;18'      # night surface #121212
+  FRAME='38;2;87;86;83'       # night border  #575653
+  HULL='38;2;208;218;201'     # night ink.primary   #D0DAC9
+  WINC='38;2;90;189;172'      # night teal          #5ABDAC
+  FIN='38;2;255;151;134'      # night red           #FF9786
+  FLAME='38;2;236;139;73'     # night peach         #EC8B49
+  SMOKE='38;2;113;122;106'    # night overlay0      #717A6A
+  MUTED='38;2;170;180;163'    # night subtext0      #AAB4A3
+else
+  CANVAS='48;2;231;236;227'   # day surface   #E7ECE3
+  FRAME='38;2;111;110;105'    # day border    #6F6E69
+  HULL='38;2;54;62;48'        # day ink.primary     #363E30
+  WINC='38;2;36;131;123'      # day teal            #24837B
+  FIN='38;2;148;41;33'        # day red             #942921
+  FLAME='38;2;188;82;21'      # day peach           #BC5215
+  SMOKE='38;2;165;174;157'    # day overlay0        #A5AE9D
+  MUTED='38;2;96;104;89'      # day subtext0        #606859
+fi
+
+SIZE=$(stty size </dev/tty 2>/dev/null) || SIZE=""
+ROWS=${SIZE% *}; COLS=${SIZE#* }
+# Fresh popup ptys can report "0 0" (or nothing) — fall back to the inner
+# size of the herdr popup (config width=64 height=22 includes its border).
+case "$ROWS" in ''|0|1) ROWS=20 ;; esac
+case "$COLS" in ''|0|1) COLS=62 ;; esac
+
+wipe() { printf '\033[%sm\033[H\033[2J' "$CANVAS"; }  # clear, filled with canvas
+
+frame() {  # rounded 1-cell border at the pane edges; draw AFTER content
+  # NB: uses k, not i — shell vars are global and callers animate with i
+  line=; k=1; while [ "$k" -le $((COLS - 2)) ]; do line="${line}─"; k=$((k + 1)); done
+  printf '\033[%sm\033[%sm' "$FRAME" "$CANVAS"
+  printf '\033[1;1H╭%s╮' "$line"
+  printf '\033[%d;1H╰%s╯' "$ROWS" "$line"
+  k=2; while [ "$k" -lt "$ROWS" ]; do printf '\033[%d;1H│\033[%d;%dH│' "$k" "$k" "$COLS"; k=$((k + 1)); done
+  printf '\033[39m'  # default fg; canvas bg persists
+}
+
+wipe  # initial coat — also tints the pre-picker screens
+
+# --- "mission control" launch UI (ANSI slots, tracks the terminal palette) ---
+
+rocket() {  # $1 = flame: 0 none, 1 burn, 2 afterburner
+  # Compact block-art rocket (▄▟▙ soft edges, █▓▒░ fills), 10 cols wide,
+  # centred on the canvas. Fixed forestflower hex (mode-aware, like the
+  # canvas) — palette slots are unreliable on the tinted canvas.
+  n=$(( (COLS - 10) / 2 )); [ "$n" -lt 0 ] && n=0
+  sp=; while [ "$n" -gt 0 ]; do sp="$sp "; n=$((n - 1)); done
+  printf '%s\033[%sm   ▄██▄\n' "$sp" "$HULL"
+  printf '%s\033[%sm  ██\033[%sm▓▓\033[%sm██\n' "$sp" "$HULL" "$WINC" "$HULL"
+  printf '%s\033[%sm  ██  ██\n' "$sp" "$HULL"
+  printf '%s\033[%sm  ██\033[%sm▓▓\033[%sm██\n' "$sp" "$HULL" "$WINC" "$HULL"
+  printf '%s\033[%sm ▟██████▙\n' "$sp" "$HULL"
+  printf '%s\033[%sm▟██\033[%sm▒\033[%sm██\033[%sm▒\033[%sm██▙\n' "$sp" "$HULL" "$FIN" "$HULL" "$FIN" "$HULL"
+  printf '%s\033[%sm  ██  ██\n' "$sp" "$HULL"
+  case "$1" in
+    1) printf '%s\033[%sm  ▓████▓\n%s\033[%sm    ░░\n' "$sp" "$FLAME" "$sp" "$SMOKE" ;;
+    2) printf '%s\033[%sm  ▓████▓\n%s\033[%sm  ▒████▒\n%s\033[%sm   ░  ░\n' "$sp" "$FLAME" "$sp" "$FLAME" "$sp" "$SMOKE" ;;
+  esac
+  printf '\033[0m'
+}
+
+launch_anim() {  # hover burn while we poll for the run id
+  wipe; printf '\033[?25l'
+  # Centre the scene inside the frame: rows 1 and ROWS belong to the border,
+  # and printing onto the last row scrolls the rocket up out of the popup.
+  rh=$(rocket 2 | wc -l)  # tallest frame (afterburner) + 1 status line
+  pad_max=$((ROWS - rh - 2)); [ "$pad_max" -lt 1 ] && pad_max=1
+  pad=$(( (ROWS - rh - 1) / 2 )); [ "$pad" -lt 1 ] && pad=1
+  [ "$pad" -gt "$pad_max" ] && pad=$pad_max
+  # centre the status text too ("dispatching — locating run id" = 29 cols)
+  sn=$(( (COLS - 29) / 2 )); [ "$sn" -lt 0 ] && sn=0
+  ssp=; while [ "$sn" -gt 0 ]; do ssp="$ssp "; sn=$((sn - 1)); done
+  i=0
+  while :; do
+    i=$((i + 1))
+    wipe
+    p=$pad
+    if [ $((i % 2)) -eq 1 ] && [ "$p" -lt "$pad_max" ]; then p=$((p + 1)); fi
+    n=0; while [ "$n" -lt "$p" ]; do printf '\n'; n=$((n + 1)); done
+    rocket $((i % 2 + 1))
+    case $((i % 4)) in 0) d="";; 1) d=".";; 2) d="..";; *) d="...";; esac
+    printf '%s\033[%smdispatching — locating run id%s\033[0m\n' "$ssp" "$MUTED" "$d"
+    frame
+    sleep 0.15
+  done
+}
+
+fly_out() {  # afterburner ascent off the top of the screen = done
+  lines=$((6 + $(rocket 2 | wc -l)))
+  drop=0
+  while [ "$drop" -le "$lines" ]; do
+    wipe
+    { printf '\n\n\n\n\n\n'; rocket 2; } | tail -n "+$((drop + 1))"
+    frame
+    drop=$((drop + 2))
+    sleep 0.06
+  done
+  printf '\033[0m\033[2J\033[H\033[?25h'
+}
 
 command -v gh  >/dev/null 2>&1 || err "gh CLI not installed"
-command -v gum >/dev/null 2>&1 || err "gum not installed: brew install gum"
+command -v tv  >/dev/null 2>&1 || err "tv not installed: brew install television"
+command -v jq  >/dev/null 2>&1 || err "jq not installed: brew install jq"
 git rev-parse --git-dir >/dev/null 2>&1 || err "not in a git repository"
 
 git fetch --quiet >/dev/null 2>&1 &
 
+status working "loading workflows…"
 workflows=$(gh workflow list --all 2>&1) || err "failed to list workflows"
 
-name=$(printf '%s\n' "$workflows" | awk -F'\t' '$2 == "active" { print $1 }' \
-  | gum filter --height 15 --placeholder 'workflow…') || exit 0
+names=$(printf '%s\n' "$workflows" | awk -F'\t' '$2 == "active" { print $1 }')
+[ -n "$names" ] || err "no active workflows in this repo"
+name=$(printf '%s\n' "$names" | tv --no-preview --input-border rounded --results-border rounded --input-prompt '❯ ' --input-header 'workflow') || exit 0
 [ -n "$name" ] || exit 0
 
-branch=$(git branch -r | grep -v HEAD | sed -e 's/^ *//' -e 's|^origin/||' \
-  | gum filter --height 15 --placeholder "branch for ${name}…") || exit 0
+branches=$(git branch -r | grep -v HEAD | sed -e 's/^ *//' -e 's|^origin/||')
+[ -n "$branches" ] || err "no remote branches — does this repo have an origin remote?"
+branch=$(printf '%s\n' "$branches" | tv --no-preview --input-border rounded --results-border rounded --input-prompt '❯ ' --input-header "branch → $name") || exit 0
 [ -n "$branch" ] || exit 0
 
 trigger_epoch=$(date +%s)
+status working "triggering $name on ${branch}…"
 if gh workflow run "$name" --ref "$branch"; then
-  printf '\n  ✓ triggered "%s" on %s\n' "$name" "$branch"
+  launch_anim & anim_pid=$!
 
   # record the run so ghr-status can flag it in the herdr tab bar
   repo=$(gh repo view --json nameWithOwner --jq .nameWithOwner 2>/dev/null)
@@ -39,14 +162,22 @@ if gh workflow run "$name" --ref "$branch"; then
     [ -n "$run_id" ] && break
     i=$((i + 1))
   done
+  kill "$anim_pid" 2>/dev/null
+  wait "$anim_pid" 2>/dev/null
   if [ -n "$run_id" ]; then
     state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/ghr"
     mkdir -p "$state_dir"
     printf '%s\n%s\n%s\n%s\n' "$repo" "$run_id" "$name" \
       "${HERDR_ACTIVE_WORKSPACE_ID:-${HERDR_WORKSPACE_ID:-}}" > "$state_dir/run"
-    printf '  ● run #%s flagged in tab bar + sidebar\n' "$run_id"
+    # poke SketchyBar so the ghr item starts tracking the run
+    sketchybar --trigger ghr_update >/dev/null 2>&1 || :
+    status done "triggered $name on $branch (run #$run_id)"
+  else
+    status done "triggered $name on $branch"
   fi
-  sleep 2
+  # no success screen — the rocket flies out, the popup closes, and the
+  # ghr item in SketchyBar tracks the run from here
+  fly_out
 else
   err "failed to trigger \"$name\""
 fi

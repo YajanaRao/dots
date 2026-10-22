@@ -1,5 +1,6 @@
 #!/bin/sh
-# ghr-status — flag for the last ghr-triggered run: herdr tab bar + sidebar token.
+# ghr-status — herdr tab-bar heartbeat (silent): pushes a $ghr progress token
+# to the owning space's sidebar row, toasts once on completion.
 set -u
 
 state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/ghr"
@@ -25,35 +26,55 @@ final=$(sed -n '5p' "$state")
 
 now=$(date +%s)
 
-icon() { case "$1" in success) printf '✓';; failure) printf '✗';; cancelled) printf '⊘';; in_progress) printf '●';; *) printf '○';; esac; }
+icon() { case "$1" in success) printf '✓';; failure) printf '✗';; cancelled) printf '⊘';; *) printf '○';; esac; }
 dur() { s=$1; if [ "$s" -ge 3600 ]; then printf '%dh%02dm' $((s/3600)) $((s%3600/60)); elif [ "$s" -ge 60 ]; then printf '%dm' $((s/60)); else printf '%ds' "$s"; fi; }
+bar() { f=$(($1 / 10)); e=$((10 - f)); b=""; while [ "$f" -gt 0 ]; do b="$b▓"; f=$((f - 1)); done; while [ "$e" -gt 0 ]; do b="$b░"; e=$((e - 1)); done; printf '%s' "$b"; }
 
-# print the flag; push it to the workspace sidebar only when it changed
 emit() {
-  printf '%s\n' "$1"
   [ -n "$ws" ] || return 0
   { [ -f "$reported" ] && [ "$(sed -n '2p' "$reported")" = "$1" ]; } && return 0
   "$herdr" workspace report-metadata "$ws" --source ghr --token ghr="$1" --ttl-ms 120000 >/dev/null 2>&1 \
     && printf '%s\n%s\n' "$ws" "$1" > "$reported"
 }
 
-# cached final state: no API call, expire 30 min after completion
+toast() {
+  case "$1" in
+    success) "$herdr" notification show "✓ $name" --sound done >/dev/null 2>&1 ;;
+    failure) "$herdr" notification show "✗ $name" --sound request >/dev/null 2>&1 ;;
+  esac
+}
+
+# cached final state ("concl epoch dur"): no API call, expire 30 min after
 if [ -n "$final" ]; then
   set -- $final
   [ $((now - $2)) -gt 1800 ] && { rm -f "$state"; clear_token; exit 0; }
-  emit "$(icon "$1") $name"
+  emit "$(icon "$1") $3"
   exit 0
 fi
 
-json=$(gh run view "$id" --repo "$repo" --json status,conclusion,createdAt,updatedAt 2>/dev/null) || exit 1
-status=$(printf '%s' "$json"  | jq -r '.status')
-concl=$(printf '%s' "$json"  | jq -r '.conclusion // ""')
-created=$(printf '%s' "$json" | jq -r '.createdAt | fromdateiso8601 | floor')
-updated=$(printf '%s' "$json" | jq -r '.updatedAt | fromdateiso8601 | floor')
+json=$(gh run view "$id" --repo "$repo" --json status,conclusion,createdAt,updatedAt,jobs 2>/dev/null) || exit 1
+row=$(printf '%s' "$json" | jq -r '
+  ([.jobs[]?.steps[]?]) as $s
+  | ($s | length) as $t
+  | ([$s[] | select(.status == "completed" or .conclusion == "skipped")] | length) as $c
+  | [.status, (.conclusion // ""),
+     (.createdAt | fromdateiso8601 | floor | tostring),
+     (.updatedAt | fromdateiso8601 | floor | tostring),
+     (if $t > 0 then ($c * 100 / $t | floor | tostring) else "-1" end)] | @tsv') || exit 1
+
+status=$(printf '%s' "$row" | cut -f1)
+concl=$(printf '%s' "$row" | cut -f2)
+created=$(printf '%s' "$row" | cut -f3)
+updated=$(printf '%s' "$row" | cut -f4)
+pct=$(printf '%s' "$row" | cut -f5)
 
 if [ "$status" = "completed" ]; then
-  printf '%s %s\n' "$concl" "$updated" >> "$state"
-  emit "$(icon "$concl") $name $(dur $((updated - created)))"
+  d=$(dur $((updated - created)))
+  printf '%s %s %s\n' "$concl" "$updated" "$d" >> "$state"
+  emit "$(icon "$concl") $d"
+  toast "$concl"
+elif [ "$pct" -ge 0 ]; then
+  emit "$(bar "$pct") $pct% $(dur $((now - created)))"
 else
-  emit "$(icon "$status") $name $(dur $((now - created)))"
+  emit "○ queued"
 fi
