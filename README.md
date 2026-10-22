@@ -46,3 +46,7 @@ chezmoi apply
 - Never edit a rendered file under `~/` — edit the palette or the template.
 - New tool? Add `dot_config/<path>.tmpl`, wire hexes to tokens, `chezmoi diff` to review.
 - Palette token missing? Add it to `forestflower.toml` (both variants), then use it.
+- **Scripts need the `executable_` name prefix** (`executable_foo.sh.tmpl`).
+  chezmoi sets modes by name, NOT from the source file's mode — a 644 plugin
+  fails sketchybar/herdr *silently*. (Learned the hard way: rift workspace
+  pills vanished because plugins lost +x.)
