@@ -22,24 +22,27 @@ err() {
 # Herdr draws a popup border but its colour is not configurable, and the popup
 # shares the terminal's background — so paint our own. Surface/border hexes
 # match the tv picker theme and the sketchybar popups (forestflower).
+# palette hex -> "r;g;b" (POSIX printf reads 0x hex)
+hx() { h=${1#\#}; r=${h%%????}; b=${h#????}; g=${h#??}; g=${g%%??}; printf '%d;%d;%d' "0x$r" "0x$g" "0x$b"; }
+
 if defaults read -g AppleInterfaceStyle >/dev/null 2>&1; then
-  CANVAS='48;2;18;18;18'      # night surface #121212
-  FRAME='38;2;87;86;83'       # night border  #575653
-  HULL='38;2;208;218;201'     # night ink.primary   #D0DAC9
-  WINC='38;2;90;189;172'      # night teal          #5ABDAC
-  FIN='38;2;255;151;134'      # night red           #FF9786
-  FLAME='38;2;236;139;73'     # night peach         #EC8B49
-  SMOKE='38;2;113;122;106'    # night overlay0      #717A6A
-  MUTED='38;2;170;180;163'    # night subtext0      #AAB4A3
+  CANVAS="48;2;$(hx '#121212')"      # night surface #121212
+  FRAME="38;2;$(hx '#575653')"       # night border  #575653
+  HULL="38;2;$(hx '#D0DAC9')"     # night ink.primary   #D0DAC9
+  WINC="38;2;$(hx '#5ABDAC')"      # night teal          #5ABDAC
+  FIN="38;2;$(hx '#FF9786')"      # night red           #FF9786
+  FLAME="38;2;$(hx '#EC8B49')"     # night peach         #EC8B49
+  SMOKE="38;2;$(hx '#717A6A')"    # night overlay0      #717A6A
+  MUTED="38;2;$(hx '#AAB4A3')"    # night subtext0      #AAB4A3
 else
-  CANVAS='48;2;231;236;227'   # day surface   #E7ECE3
-  FRAME='38;2;111;110;105'    # day border    #6F6E69
-  HULL='38;2;54;62;48'        # day ink.primary     #363E30
-  WINC='38;2;36;131;123'      # day teal            #24837B
-  FIN='38;2;148;41;33'        # day red             #942921
-  FLAME='38;2;188;82;21'      # day peach           #BC5215
-  SMOKE='38;2;165;174;157'    # day overlay0        #A5AE9D
-  MUTED='38;2;96;104;89'      # day subtext0        #606859
+  CANVAS="48;2;$(hx '#E7ECE3')"   # day surface   #E7ECE3
+  FRAME="38;2;$(hx '#6F6E69')"    # day border    #6F6E69
+  HULL="38;2;$(hx '#363E30')"        # day ink.primary     #363E30
+  WINC="38;2;$(hx '#24837B')"      # day teal            #24837B
+  FIN="38;2;$(hx '#942921')"        # day red             #942921
+  FLAME="38;2;$(hx '#BC5215')"      # day peach           #BC5215
+  SMOKE="38;2;$(hx '#A5AE9D')"    # day overlay0        #A5AE9D
+  MUTED="38;2;$(hx '#606859')"      # day subtext0        #606859
 fi
 
 SIZE=$(stty size </dev/tty 2>/dev/null) || SIZE=""

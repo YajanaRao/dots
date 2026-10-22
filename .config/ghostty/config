@@ -26,7 +26,7 @@ mouse-hide-while-typing = true
 macos-option-as-alt = true
 
 # Theme
-theme = dark:/Users/yajanarao/Developer/forestflower/extras/ghostty/forestflower-night, light:/Users/yajanarao/Developer/forestflower/extras/ghostty/forestflower-day
+theme = dark:forestflower-night, light:forestflower-day
 cursor-style = bar
 # background-opacity = 0.9
 
