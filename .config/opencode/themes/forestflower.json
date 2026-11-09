@@ -1,0 +1,279 @@
+{
+  "$schema": "https://opencode.ai/theme.json",
+  "defs": {
+    "night_canvas": "#000000",
+    "night_surface": "#0B0B0B",
+    "night_surface_deep": "#121212",
+    "night_surface_raised": "#181818",
+    "night_selection": "#1D2112",
+    "night_ink": "#D0DAC9",
+    "night_ink_secondary": "#AAB4A3",
+    "night_muted": "#717A6A",
+    "night_subtle": "#8F9988",
+    "night_primary": "#FBC701",
+    "night_primary_container": "#4D4126",
+    "night_syntax_keyword": "#A0AF54",
+    "night_syntax_operator": "#878580",
+    "night_syntax_function": "#EC8B49",
+    "night_syntax_string": "#5ABDAC",
+    "night_syntax_type": "#66A0C8",
+    "night_syntax_tag": "#E47DA8",
+    "night_syntax_regex": "#A699D0",
+    "night_syntax_number": "#A699D0",
+    "night_syntax_variable": "#D0DAC9",
+    "night_syntax_punctuation": "#878580",
+    "night_syntax_comment": "#8F9988",
+    "night_error": "#FF9786",
+    "night_warning": "#FFAB74",
+    "night_success": "#B3CD6E",
+    "night_info": "#75BFFF",
+    "night_hint": "#8F9988",
+    "night_git_add": "#B3CD6E",
+    "night_git_change": "#FFAB74",
+    "night_git_delete": "#FF9786",
+    "night_git_untracked": "#75BFFF",
+    "night_git_ignored": "#8F9988",
+    "night_git_conflict": "#E47DA8",
+    "night_diff_add_bg": "#272D18",
+    "night_diff_change_bg": "#38261A",
+    "night_diff_delete_bg": "#38211D",
+    "day_canvas": "#F3F8EF",
+    "day_surface": "#ECF1E8",
+    "day_surface_deep": "#E7ECE3",
+    "day_surface_raised": "#DEE3DA",
+    "day_selection": "#CCD6B9",
+    "day_ink": "#363E30",
+    "day_ink_secondary": "#515A4B",
+    "day_muted": "#A5AE9D",
+    "day_subtle": "#606859",
+    "day_primary": "#705800",
+    "day_primary_container": "#F4E7C6",
+    "day_syntax_keyword": "#66800B",
+    "day_syntax_operator": "#878580",
+    "day_syntax_function": "#BC5215",
+    "day_syntax_string": "#24837B",
+    "day_syntax_type": "#205EA6",
+    "day_syntax_tag": "#A02F6F",
+    "day_syntax_regex": "#5E409D",
+    "day_syntax_number": "#5E409D",
+    "day_syntax_variable": "#363E30",
+    "day_syntax_punctuation": "#878580",
+    "day_syntax_comment": "#606859",
+    "day_error": "#942921",
+    "day_warning": "#9A4B0B",
+    "day_success": "#506A0C",
+    "day_info": "#005581",
+    "day_hint": "#606859",
+    "day_git_add": "#506A0C",
+    "day_git_change": "#9A4B0B",
+    "day_git_delete": "#942921",
+    "day_git_untracked": "#005581",
+    "day_git_ignored": "#606859",
+    "day_git_conflict": "#A02F6F",
+    "day_diff_add_bg": "#CFD9BD",
+    "day_diff_change_bg": "#DFD2BD",
+    "day_diff_delete_bg": "#DECAC2"
+  },
+  "theme": {
+    "primary": {
+      "dark": "night_primary",
+      "light": "day_primary"
+    },
+    "secondary": {
+      "dark": "night_success",
+      "light": "day_success"
+    },
+    "accent": {
+      "dark": "night_primary",
+      "light": "day_primary"
+    },
+    "error": {
+      "dark": "night_error",
+      "light": "day_error"
+    },
+    "warning": {
+      "dark": "night_warning",
+      "light": "day_warning"
+    },
+    "success": {
+      "dark": "night_success",
+      "light": "day_success"
+    },
+    "info": {
+      "dark": "night_info",
+      "light": "day_info"
+    },
+    "text": {
+      "dark": "night_ink",
+      "light": "day_ink"
+    },
+    "textMuted": {
+      "dark": "night_ink_secondary",
+      "light": "day_ink_secondary"
+    },
+    "background": {
+      "dark": "night_canvas",
+      "light": "day_canvas"
+    },
+    "backgroundPanel": {
+      "dark": "night_surface",
+      "light": "day_surface"
+    },
+    "backgroundElement": {
+      "dark": "night_surface_raised",
+      "light": "day_surface_raised"
+    },
+    "border": {
+      "dark": "night_surface_raised",
+      "light": "day_surface_raised"
+    },
+    "borderActive": {
+      "dark": "night_primary",
+      "light": "day_primary"
+    },
+    "borderSubtle": {
+      "dark": "night_muted",
+      "light": "day_muted"
+    },
+    "diffAdded": {
+      "dark": "night_git_add",
+      "light": "day_git_add"
+    },
+    "diffRemoved": {
+      "dark": "night_git_delete",
+      "light": "day_git_delete"
+    },
+    "diffContext": {
+      "dark": "night_subtle",
+      "light": "day_subtle"
+    },
+    "diffHunkHeader": {
+      "dark": "night_muted",
+      "light": "day_muted"
+    },
+    "diffHighlightAdded": {
+      "dark": "night_git_add",
+      "light": "day_git_add"
+    },
+    "diffHighlightRemoved": {
+      "dark": "night_git_delete",
+      "light": "day_git_delete"
+    },
+    "diffAddedBg": {
+      "dark": "night_diff_add_bg",
+      "light": "day_diff_add_bg"
+    },
+    "diffRemovedBg": {
+      "dark": "night_diff_delete_bg",
+      "light": "day_diff_delete_bg"
+    },
+    "diffContextBg": {
+      "dark": "night_surface_raised",
+      "light": "day_surface_raised"
+    },
+    "diffLineNumber": {
+      "dark": "night_muted",
+      "light": "day_muted"
+    },
+    "diffAddedLineNumberBg": {
+      "dark": "night_diff_add_bg",
+      "light": "day_diff_add_bg"
+    },
+    "diffRemovedLineNumberBg": {
+      "dark": "night_diff_delete_bg",
+      "light": "day_diff_delete_bg"
+    },
+    "markdownText": {
+      "dark": "night_ink",
+      "light": "day_ink"
+    },
+    "markdownHeading": {
+      "dark": "night_syntax_keyword",
+      "light": "day_syntax_keyword"
+    },
+    "markdownLink": {
+      "dark": "night_syntax_type",
+      "light": "day_syntax_type"
+    },
+    "markdownLinkText": {
+      "dark": "night_syntax_string",
+      "light": "day_syntax_string"
+    },
+    "markdownCode": {
+      "dark": "night_syntax_variable",
+      "light": "day_syntax_variable"
+    },
+    "markdownBlockQuote": {
+      "dark": "night_syntax_comment",
+      "light": "day_syntax_comment"
+    },
+    "markdownEmph": {
+      "dark": "night_ink",
+      "light": "day_ink"
+    },
+    "markdownStrong": {
+      "dark": "night_ink",
+      "light": "day_ink"
+    },
+    "markdownHorizontalRule": {
+      "dark": "night_muted",
+      "light": "day_muted"
+    },
+    "markdownListItem": {
+      "dark": "night_syntax_type",
+      "light": "day_syntax_type"
+    },
+    "markdownListEnumeration": {
+      "dark": "night_syntax_function",
+      "light": "day_syntax_function"
+    },
+    "markdownImage": {
+      "dark": "night_syntax_type",
+      "light": "day_syntax_type"
+    },
+    "markdownImageText": {
+      "dark": "night_syntax_string",
+      "light": "day_syntax_string"
+    },
+    "markdownCodeBlock": {
+      "dark": "night_ink",
+      "light": "day_ink"
+    },
+    "syntaxComment": {
+      "dark": "night_syntax_comment",
+      "light": "day_syntax_comment"
+    },
+    "syntaxKeyword": {
+      "dark": "night_syntax_keyword",
+      "light": "day_syntax_keyword"
+    },
+    "syntaxFunction": {
+      "dark": "night_syntax_function",
+      "light": "day_syntax_function"
+    },
+    "syntaxVariable": {
+      "dark": "night_syntax_variable",
+      "light": "day_syntax_variable"
+    },
+    "syntaxString": {
+      "dark": "night_syntax_string",
+      "light": "day_syntax_string"
+    },
+    "syntaxNumber": {
+      "dark": "night_syntax_number",
+      "light": "day_syntax_number"
+    },
+    "syntaxType": {
+      "dark": "night_syntax_type",
+      "light": "day_syntax_type"
+    },
+    "syntaxOperator": {
+      "dark": "night_syntax_operator",
+      "light": "day_syntax_operator"
+    },
+    "syntaxPunctuation": {
+      "dark": "night_syntax_punctuation",
+      "light": "day_syntax_punctuation"
+    }
+  }
+}

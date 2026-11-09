@@ -1,0 +1,205 @@
+# This is a demo config to showcase some of the most important commands.
+# It is meant to be changed and configured, as it is intentionally kept sparse.
+# For a (much) more advanced configuration example see my dotfiles:
+# https://github.com/FelixKratz/dotfiles
+
+PLUGIN_DIR="$CONFIG_DIR/plugins"
+# shellcheck disable=SC1091
+. "$HOME/.config/sketchybar/forestflower.sh"
+
+##### Bar Appearance #####
+# Configuring the general appearance of the bar.
+# These are only some of the options available. For all options see:
+# https://felixkratz.github.io/SketchyBar/config/bar
+# If you are looking for other colors, see the color picker:
+# https://felixkratz.github.io/SketchyBar/config/tricks#color-picker
+
+# Colors come from ./forestflower.sh (chezmoi-generated; current macOS appearance).
+
+sketchybar --bar position=top height=34 color="$FF_BAR" topmost=window
+
+##### Changing Defaults #####
+# We now change some default values, which are applied to all further items.
+# For a full list of all available item properties see:
+# https://felixkratz.github.io/SketchyBar/config/items
+
+default=(
+  padding_left=5
+  padding_right=5
+  icon.font="Hack Nerd Font:Bold:17.0"
+  label.font="Iosevka:Bold:14.0"
+  icon.color="$FF_FG"
+  label.color="$FF_FG"
+  icon.padding_left=4
+  icon.padding_right=4
+  label.padding_left=4
+  label.padding_right=4
+)
+sketchybar --default "${default[@]}"
+
+##### Adding Rift Workspace Indicators #####
+# One item per rift workspace (index 0-9, labels 1-10). plugins/rift.sh
+# refreshes all of them whenever rift emits an event (and every 30s as a
+# fallback). Empty + inactive workspaces are hidden (like show_empty=false).
+
+sketchybar --add event rift_update
+
+SPACE_ICONS=("1" "2" "3" "4" "5" "6" "7" "8" "9" "10")
+for i in "${!SPACE_ICONS[@]}"
+do
+  space=(
+    icon="${SPACE_ICONS[i]}"
+    icon.font="Iosevka:Bold:13.0"
+    icon.padding_left=8
+    icon.padding_right=8
+    label.drawing=off
+    drawing=off
+    background.color="$FF_SELECTION"
+    background.corner_radius=0
+    background.height=22
+    background.drawing=off
+    click_script="rift-cli execute workspace switch $i"
+  )
+  sketchybar --add item rift."$i" left --set rift."$i" "${space[@]}"
+done
+
+sketchybar --add item rift.updater left \
+           --set rift.updater drawing=off update_freq=30 \
+                  script="$PLUGIN_DIR/rift.sh" \
+           --subscribe rift.updater rift_update
+
+##### Appearance (forestflower night/day follows macOS theme) #####
+
+sketchybar --add event theme_changed AppleInterfaceThemeChangedNotification
+sketchybar --add item theme.watcher left \
+           --set theme.watcher drawing=off script="$HOME/.config/sketchybar/theme.sh" \
+           --subscribe theme.watcher theme_changed
+
+##### Adding Left Items #####
+# We add some regular items to the left side of the bar, where
+# only the properties deviating from the current defaults need to be set
+
+sketchybar --add item chevron left \
+           --set chevron icon= label.drawing=off icon.color="$FF_CHEVRON" \
+           --add item front_app left \
+           --set front_app icon.drawing=off script="$PLUGIN_DIR/front_app.sh" \
+           --subscribe front_app front_app_switched
+
+##### Adding Right Items #####
+# In the same way as the left items we can add items to the right side.
+# Additional position (e.g. center) are available, see:
+# https://felixkratz.github.io/SketchyBar/config/items#adding-items-to-sketchybar
+
+# Some items refresh on a fixed cycle, e.g. the clock runs its script once
+# every 10s. Other items respond to events they subscribe to, e.g. the
+# volume.sh script is only executed once an actual change in system audio
+# volume is registered. More info about the event system can be found here:
+# https://felixkratz.github.io/SketchyBar/config/events
+
+sketchybar --add item clock right \
+           --set clock update_freq=10 icon=  script="$PLUGIN_DIR/clock.sh" icon.color="$FF_CLOCK" \
+           --add item volume right \
+           --set volume icon.color="$FF_VOLUME" script="$PLUGIN_DIR/volume.sh" \
+           --subscribe volume volume_change mouse.scrolled \
+           --add item battery right \
+           --set battery update_freq=120 icon.color="$FF_BATTERY" script="$PLUGIN_DIR/battery.sh" \
+           --subscribe battery system_woke power_source_change
+
+##### Media (now playing; click for a card with artwork + controls) #####
+# Track info polled via nowplaying-cli: media_change is deprecated on
+# macOS 26 (SketchyBar issue #708). Click the pill for a card with artwork,
+# title, artist/album and previous/play-pause/next (needs nowplaying-cli).
+
+sketchybar --add item media right \
+           --set media drawing=off update_freq=5 icon=󰎆 icon.color="$FF_MEDIA" \
+                 label.color="$FF_FG" label.max_chars=24 \
+                 popup.align=center \
+                 popup.background.drawing=on \
+                 popup.background.color="$FF_SELECTION" \
+                 popup.background.corner_radius=9 \
+                 popup.background.border_width=1 \
+                 popup.background.border_color="$FF_CHEVRON" \
+                 popup.background.shadow.drawing=on \
+                 script="$PLUGIN_DIR/media.sh" \
+           --subscribe media mouse.clicked \
+           --add item media.artwork popup.media \
+           --set media.artwork icon.drawing=off label.drawing=off \
+                 background.drawing=on \
+                 background.image.corner_radius=9 \
+                 click_script="nowplaying-cli togglePlayPause" \
+           --add item media.title popup.media \
+           --set media.title icon.drawing=off \
+                 label.width=178 label.align=center \
+                 label.color="$FF_FG" label.max_chars=28 \
+           --add item media.artist popup.media \
+           --set media.artist icon.drawing=off \
+                 label.width=178 label.align=center \
+                 label.color="$FF_CHEVRON" label.max_chars=30 \
+           --add item media.album popup.media \
+           --set media.album icon.drawing=off \
+                 label.width=178 label.align=center \
+                 label.color="$FF_CHEVRON" label.max_chars=30 \
+           --add slider media.progress popup.media 160 \
+           --set media.progress slider.highlight_color="$FF_MEDIA" \
+                 slider.background.color="$FF_CHEVRON" \
+                 slider.background.height=3 slider.background.corner_radius=2 \
+                 slider.knob=● slider.knob.color="$FF_MEDIA" \
+                 slider.knob.font.size=8 \
+           --add slider media.controls popup.media 160 \
+           --set media.controls slider.background.drawing=off \
+                 slider.percentage=50 \
+                 slider.knob="󰒮      󰏤      󰒭" \
+                 slider.knob.font="Hack Nerd Font:Bold:16.00" \
+                 slider.knob.color="$FF_FG" \
+                 script="$PLUGIN_DIR/media.sh" \
+           --subscribe media.controls mouse.clicked \
+           --set '/media\..*/' script="$PLUGIN_DIR/media.sh" \
+           --subscribe media mouse.entered mouse.exited \
+           --subscribe media.artwork mouse.entered mouse.exited \
+           --subscribe media.title mouse.entered mouse.exited \
+           --subscribe media.artist mouse.entered mouse.exited \
+           --subscribe media.album mouse.entered mouse.exited \
+           --subscribe media.progress mouse.entered mouse.exited \
+           --subscribe media.controls mouse.entered mouse.exited
+
+##### Bluetooth #####
+# Click the icon for a popup of paired devices; click a device to connect or
+# disconnect it (plugins/bluetooth.sh, needs blueutil). bluetooth_update is
+# triggered by the theme watcher and after each connect/disconnect.
+
+sketchybar --add event bluetooth_update \
+           --add item bluetooth right \
+           --set bluetooth update_freq=30 icon=󰂯 icon.color="$FF_VOLUME" \
+                 label.color="$FF_FG" label.max_chars=12 \
+                 popup.align=center \
+                 popup.background.drawing=on \
+                 popup.background.color="$FF_SELECTION" \
+                 popup.background.corner_radius=9 \
+                 popup.background.border_width=1 \
+                 popup.background.border_color="$FF_CHEVRON" \
+                 popup.background.shadow.drawing=on \
+                 script="$PLUGIN_DIR/bluetooth.sh" \
+           --subscribe bluetooth bluetooth_update mouse.clicked
+
+##### GitHub Actions (ghr) #####
+# Minimal status icon for the run triggered by ~/.local/bin/ghr (herdr:
+# prefix+alt+r): ○ queued / ● running / ✓ success / ✗ failure. Click opens a
+# detail card (workflow, repo · branch, progress, open-in-browser), right-click
+# dismisses. Hidden and idle until ghr pokes ghr_update after dispatching.
+
+sketchybar --add event ghr_update \
+           --add item ghr right \
+           --set ghr drawing=off update_freq=0 icon.color="$FF_CHEVRON" \
+                 label.drawing=off \
+                 popup.align=center \
+                 popup.background.drawing=on \
+                 popup.background.color="$FF_SELECTION" \
+                 popup.background.corner_radius=9 \
+                 popup.background.border_width=1 \
+                 popup.background.border_color="$FF_CHEVRON" \
+                 popup.background.shadow.drawing=on \
+                 script="$PLUGIN_DIR/ghr.sh" \
+           --subscribe ghr ghr_update mouse.clicked
+
+##### Force all scripts to run the first time (never do this in a script) #####
+sketchybar --update

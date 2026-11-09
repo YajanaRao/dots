@@ -1,0 +1,130 @@
+# ---------------------------------------------------------------------------
+# git aliases (oh-my-zsh git-plugin conventions) + gh CLI + lazygit
+# sourced from ~/.zshrc
+# ---------------------------------------------------------------------------
+
+# core
+alias g='git'
+alias gst='git status'
+alias gss='git status -s'
+alias gco='git checkout'
+alias gcb='git checkout -b'
+alias gsw='git switch'
+alias gswc='git switch -c'
+alias ga='git add'
+alias gaa='git add --all'
+alias gapa='git add --patch'
+alias gc='git commit -v'
+alias gcm='git commit -m'
+alias gca='git commit --amend --no-edit'
+alias gcae='git commit --amend'
+
+# branches & remotes
+alias gb='git branch'
+alias gba='git branch -a'
+alias gbd='git branch -d'
+alias gbD='git branch -D'
+alias gf='git fetch'
+alias gfa='git fetch --all --prune'
+alias gr='git remote'
+alias grv='git remote -v'
+alias gp='git push'
+alias gpf='git push --force-with-lease'
+alias gpsup='git push --set-upstream origin $(git branch --show-current)'
+alias gl='git pull'
+alias gpr='git pull --rebase'
+
+# log & diff
+alias glg='git log --oneline --graph --decorate'
+alias glol="git log --graph --pretty='%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%ar) %C(bold blue)<%an>%Creset'"
+alias glola="git log --graph --all --pretty='%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%ar) %C(bold blue)<%an>%Creset'"
+alias gd='git diff'
+alias gds='git diff --staged'
+alias gsh='git show'
+
+# rebase
+alias grb='git rebase'
+alias grbi='git rebase -i'
+alias grbc='git rebase --continue'
+alias grba='git rebase --abort'
+alias grbs='git rebase --skip'
+
+# stash
+alias gsta='git stash push'
+alias gstp='git stash pop'
+alias gstl='git stash list'
+alias gstd='git stash drop'
+alias gsts='git stash show --text'
+
+# reset / restore / clean
+alias grh='git reset'
+alias grhh='git reset --hard'
+alias grs='git restore'
+alias grss='git restore --staged'
+alias gclean='git clean -fd'
+
+# cherry-pick / merge
+alias gcp='git cherry-pick'
+alias gcpc='git cherry-pick --continue'
+alias gcpa='git cherry-pick --abort'
+alias gm='git merge'
+alias gma='git merge --abort'
+
+# gh CLI
+alias ghpr='gh pr create'
+alias ghprv='gh pr view --web'
+alias ghprl='gh pr list'
+alias ghprc='gh pr checkout'
+alias ghrv='gh repo view --web'
+alias ghrun='gh run list'
+
+# lazygit
+alias lg='lazygit'
+
+# cursor-agent
+alias ca='cursor-agent'
+
+# dotfiles (bare repo at ~/.dots, work-tree=$HOME)
+alias dots='git --git-dir=$HOME/.dots --work-tree=$HOME'
+alias dotss='dots status'
+alias dotsa='dots add'
+alias dotsc='dots commit'
+alias dotsp='dots push'
+alias dotspl='dots pull'
+alias dotsd='dots diff'
+alias dotsl='dots log --oneline --graph --decorate'
+
+# ---------------------------------------------------------------------------
+# functions
+# ---------------------------------------------------------------------------
+
+# git default branch name (main, master, whatever origin/HEAD points at)
+gdefault() {
+  local ref
+  ref=$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null)
+  if [ -n "$ref" ]; then
+    echo "${ref#origin/}"
+    return 0
+  fi
+  local b
+  for b in main master trunk; do
+    if git show-ref --verify --quiet "refs/heads/$b"; then
+      echo "$b"
+      return 0
+    fi
+  done
+  return 1
+}
+
+# checkout the default branch
+gcom() {
+  local b
+  b=$(gdefault)
+  [ -n "$b" ] || { print -u2 "gcom: could not determine default branch"; return 1; }
+  git checkout "$b"
+}
+
+# quick WIP commit
+gwip() {
+  git add --all && git commit --no-verify --no-gpg-sign -m "--wip-- [skip ci]"
+}

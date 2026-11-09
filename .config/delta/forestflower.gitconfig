@@ -1,0 +1,53 @@
+# Forest Flower — delta diff theme (day + night variants)
+# GENERATED from DESIGN.md by scripts/generate.mjs — do not edit by hand.
+#
+# Add to ~/.gitconfig:  [include] path = ~/.config/delta/forestflower.gitconfig
+# then select a feature:  [delta] features = forestflower-night   # or -day
+
+[delta "forestflower-day"]
+	light = true
+	line-numbers = true
+	syntax-theme = OneHalfLight
+	minus-style = syntax "#DECAC2"
+	minus-emph-style = syntax "#DEB8A9"
+	minus-non-emph-style = syntax "#EFDBCA"
+	plus-style = syntax "#CFD9BD"
+	plus-emph-style = syntax "#C8CCA3"
+	plus-non-emph-style = syntax "#E6E4C7"
+	zero-style = syntax
+	hunk-header-style = "#705800" bold
+	hunk-header-decoration-style = "#A5AE9D" box
+	hunk-header-file-style = "#205EA6"
+	hunk-header-line-number-style = "#606859"
+	file-style = "#205EA6" bold
+	file-decoration-style = "#A5AE9D" ul
+	line-numbers-minus-style = "#942921"
+	line-numbers-plus-style = "#506A0C"
+	line-numbers-zero-style = "#A5AE9D"
+	line-numbers-left-style = "#A5AE9D"
+	line-numbers-right-style = "#A5AE9D"
+	blame-palette = "#ECF1E8" "#F3F8EF" "#DEE3DA"
+
+[delta "forestflower-night"]
+	dark = true
+	line-numbers = true
+	syntax-theme = Dracula
+	minus-style = syntax "#38211D"
+	minus-emph-style = syntax "#583F3E"
+	minus-non-emph-style = syntax "#31292B"
+	plus-style = syntax "#272D18"
+	plus-emph-style = syntax "#464D3A"
+	plus-non-emph-style = syntax "#292F2A"
+	zero-style = syntax
+	hunk-header-style = "#FBC701" bold
+	hunk-header-decoration-style = "#717A6A" box
+	hunk-header-file-style = "#66A0C8"
+	hunk-header-line-number-style = "#8F9988"
+	file-style = "#66A0C8" bold
+	file-decoration-style = "#717A6A" ul
+	line-numbers-minus-style = "#FF9786"
+	line-numbers-plus-style = "#B3CD6E"
+	line-numbers-zero-style = "#717A6A"
+	line-numbers-left-style = "#717A6A"
+	line-numbers-right-style = "#717A6A"
+	blame-palette = "#0B0B0B" "#000000" "#181818"

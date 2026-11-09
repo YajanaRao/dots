@@ -1,0 +1,34 @@
+# Forest Flower DAY for television (tv)
+#
+# Hex variant with true DESIGN.md tokens — fixes the ANSI theme's one
+# compromise (gray selection bar). The cursor row is flaneur's recipe:
+# surface.raised row + accent.action text ("the current one among many").
+#
+# ~/.config/television/themes/forestflower.toml is a symlink that the
+# appearance watcher (extras/sketchybar/theme.sh) re-points between this
+# file and forestflower-night.toml when macOS flips light/dark.
+
+# general
+background = "#E7ECE3"       # surface0 — panel tint so popups stand off the terminal
+border_fg = "#6F6E69"        # visible 1px border tier (same as sketchybar popup borders)
+text_fg = "#363E30"          # ink.primary
+dimmed_text_fg = "#606859"   # ink.comment — captions / meta
+# input
+input_text_fg = "#363E30"    # typed query = body ink
+result_count_fg = "#A5AE9D"  # ink.faint
+# results
+result_name_fg = "#363E30"   # rows = ink.primary, no accent hue
+result_line_number_fg = "#A5AE9D"
+result_value_fg = "#24837B"  # cyan values
+selection_bg = "#DEE3DA"     # surface.raised — the cursor row (was gray!)
+selection_fg = "#705800"     # accent.action — state.active gold
+match_fg = "#705800"         # matches = action gold
+# preview
+preview_title_fg = "#205EA6"
+# mode pills — accent fill + on-action ink
+channel_mode_fg = "#F3F8EF"
+channel_mode_bg = "#705800"
+remote_control_mode_fg = "#F3F8EF"
+remote_control_mode_bg = "#205EA6"
+action_picker_mode_fg = "#F3F8EF"
+action_picker_mode_bg = "#24837B"
